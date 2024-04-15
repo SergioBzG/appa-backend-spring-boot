@@ -1,0 +1,14 @@
+server:
+    error:
+        include-message: always
+spring:
+    application:
+        name: appa
+    datasource:
+        url: jdbc:postgresql://localhost:5432/appa_db_spring
+        jpa:
+            hibernate:
+                ddl-auto: update
+            properties:
+                hibernate:
+                    dialect: org.hibernate.dialect.PostgreSQLDialect
