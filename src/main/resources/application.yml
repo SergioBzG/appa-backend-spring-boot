@@ -1,11 +1,14 @@
 server:
     error:
         include-message: always
+    port: ${SERVER_PORT}
 spring:
     application:
         name: appa
     datasource:
-        url: jdbc:postgresql://localhost:5432/appa_db_spring
+        url: jdbc:postgresql://${DATASOURCE_HOST}:${DATASOURCE_PORT}/${DATASOURCE_NAME}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
         jpa:
             hibernate:
                 ddl-auto: update
