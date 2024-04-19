@@ -1,4 +1,4 @@
-package com.sbz.appa.infrastructure.persistence.utils;
+package com.sbz.appa.commons;
 
 public enum ServiceType {
     CARRIAGE,

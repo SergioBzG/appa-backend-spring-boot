@@ -1,9 +1,9 @@
 package com.sbz.appa.infrastructure.persistence.entity;
 
 
-import com.sbz.appa.infrastructure.persistence.utils.Checkpoint;
-import com.sbz.appa.infrastructure.persistence.utils.Nation;
-import com.sbz.appa.infrastructure.persistence.utils.ServiceType;
+import com.sbz.appa.commons.Checkpoint;
+import com.sbz.appa.commons.Nation;
+import com.sbz.appa.commons.ServiceType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
