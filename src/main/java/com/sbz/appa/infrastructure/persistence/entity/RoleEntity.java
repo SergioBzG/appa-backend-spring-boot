@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     @NotBlank(message = "a name is required")
     @Size(max = 50, message = "name is too long")
     private String name;
@@ -28,4 +30,7 @@ public class RoleEntity {
     @NotBlank(message = "a description is required")
     @Size(max = 100, message = "description is too long")
     private String description;
+
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    private List<UserEntity> users;
 }

@@ -11,8 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.validator.constraints.UniqueElements;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -29,12 +29,12 @@ public class UserEntity {
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private RoleEntity role;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     @NotEmpty(message = "invalid document")
     @Size(max = 50, message = "document is too long")
     private String document;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, length = 50)
     @NotBlank(message = "a name is required")
     @Size(max = 50, message = "name is too long")
     private String name;
@@ -62,9 +62,11 @@ public class UserEntity {
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     @NotNull(message = "available field is required")
-//    @ColumnDefault(value = "0")
     private Boolean available;
 
-    // TODO : create fields that represent relationship with other entity
-    // RELATIONSHIPS
+    @OneToMany(mappedBy = "userCitizen", fetch = FetchType.LAZY)
+    private List<ServiceEntity> citizenOrders;
+
+    @OneToMany(mappedBy = "userBison", fetch = FetchType.LAZY)
+    private List<ServiceEntity> bisonOrders;
 }
