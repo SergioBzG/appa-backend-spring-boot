@@ -44,7 +44,6 @@ public class UserEntity {
 
     @Column(nullable = false)
     @NotBlank(message = "a password is required")
-    @Size(max = 50)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
