@@ -21,12 +21,12 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "a name is required")
     @Size(max = 50, message = "name is too long")
     private String name;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     @NotBlank(message = "a description is required")
     @Size(max = 100, message = "description is too long")
     private String description;

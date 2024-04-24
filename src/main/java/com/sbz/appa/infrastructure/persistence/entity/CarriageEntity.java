@@ -1,7 +1,7 @@
 package com.sbz.appa.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -26,12 +26,11 @@ public class CarriageEntity {
     @JoinColumn(name = "service_id")
     private ServiceEntity service;
 
-    @Column(nullable = false)
     @NotNull(message = "a pick up date is required")
     private LocalDateTime pickUp;
 
     @Column(nullable = false)
-    @NotEmpty(message = "a description is required")
+    @NotBlank(message = "a description is required")
     @Size(max = 200, message = "description is too long")
     private String description;
 
