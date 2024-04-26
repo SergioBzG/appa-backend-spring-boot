@@ -22,11 +22,4 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body("Keep it going");
     }
-
-    @GetMapping(value = "try")
-    public ResponseEntity<String> tryIt() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Keep it tyring");
-    }
 }
