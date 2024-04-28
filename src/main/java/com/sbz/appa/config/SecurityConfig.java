@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -28,6 +29,7 @@ public class SecurityConfig {
                     config.setAllowedMethods(Collections.singletonList("*"));
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(Collections.singletonList("*"));
+                    config.setExposedHeaders(List.of("Authorization")); // Expose Authorization header
                     config.setMaxAge(3600L);
                     return config;
                 }))

@@ -1,5 +1,6 @@
 package com.sbz.appa.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -31,6 +32,7 @@ public class RoleEntity {
     @Size(max = 100, message = "description is too long")
     private String description;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<UserEntity> users;
 }
