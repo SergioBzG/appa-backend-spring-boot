@@ -1,6 +1,5 @@
 package com.sbz.appa.application.dto;
 
-import com.sbz.appa.infrastructure.persistence.utils.Checkpoint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,5 +22,5 @@ public class GuideDto {
 
     @NotBlank(message = "an current checkpoint is required")
     @Size(max = 50, message = "current checkpoint is too long")
-    private Checkpoint currentCheckpoint;
+    private String currentCheckpoint;
 }

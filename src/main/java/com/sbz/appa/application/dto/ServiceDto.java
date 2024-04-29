@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ServiceDto {
-    private UserDto  userCitizen;
+    private Long  userCitizen;
 
-    private UserDto  userBison;
+    private Long  userBison;
 
     @NotBlank(message = "a type is required")
     @Size(max = 20, message = "type is too long")
