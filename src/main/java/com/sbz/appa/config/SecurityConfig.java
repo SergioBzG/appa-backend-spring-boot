@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests // Permissions Configuration
                         .requestMatchers("/v1/users/register/citizen").permitAll()
                         .requestMatchers("/v1/users/login").authenticated()
-                        .requestMatchers("/v1/roles/create", "/v1/roles/list").hasRole("ADMIN")
+                        .requestMatchers("/v1/roles/create", "/v1/roles/list", "v1/users/register/staff").hasRole("ADMIN")
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());

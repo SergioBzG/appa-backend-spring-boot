@@ -26,6 +26,18 @@ public class UserController {
                 .body(userUseCase.saveUser(user));
     }
 
+    @PostMapping(value = "/register/staff")
+    public ResponseEntity<UserDto> registerStaff(@RequestBody UserDto user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Validate user role
+        if(!(user.getRole().equals("ROLE_BISON") || user.getRole().equals("ROLE_ADMIN"))) {
+            throw new IllegalArgumentException("Invalid role");
+        }
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userUseCase.saveUser(user));
+    }
+
     @GetMapping(value = "/login")
     public ResponseEntity<UserDto> getUser(Authentication authentication) {
         return ResponseEntity
