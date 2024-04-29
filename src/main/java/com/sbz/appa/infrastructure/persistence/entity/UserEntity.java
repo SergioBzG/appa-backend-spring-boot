@@ -64,4 +64,9 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "userBison", fetch = FetchType.LAZY)
     private List<ServiceEntity> bisonOrders;
+
+    @PrePersist
+    void preInsert() {
+        if (this.available == null) this.available = true;
+    }
 }

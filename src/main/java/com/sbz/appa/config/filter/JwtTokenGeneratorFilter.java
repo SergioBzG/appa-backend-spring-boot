@@ -46,8 +46,8 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return !request.getServletPath().equals("/v1/users");
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return !request.getServletPath().equals("/v1/users/login");
     }
 
     private String getAuthoritiesAsString(Collection<? extends GrantedAuthority> authorities) {
