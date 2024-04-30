@@ -44,4 +44,11 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(userUseCase.getUserByEmail(authentication.getName()));
     }
+
+    @PatchMapping(value = "/update")
+    public ResponseEntity<UserDto> updatedUser(@RequestBody UserDto user, Authentication authentication) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUseCase.updateUser(user, authentication.getName()));
+    }
 }

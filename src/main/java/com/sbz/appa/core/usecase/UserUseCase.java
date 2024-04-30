@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserUseCase {
     UserDto saveUser(UserDto userDto);
 
-    UserDto updateUser(UserDto userDto);
+    UserDto updateUser(UserDto userDto, String email);
 
     void deleteUser(Long id);
 
