@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -53,8 +52,17 @@ public class UserUseCaseImpl implements UserUseCase {
     }
 
     @Override
-    public void deleteUser(Long id) {
-
+    public void deleteUser(Long id, String email) {
+        UserEntity userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("User with this id not found"));
+        UserEntity userRequester =  userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals("ROLE_ADMIN")) {
+            // TODO : type logic to looking for a new bison who takes the service that deleted bison had assigned, in case of deleted bison has an assigned service
+        } else if (!userToDelete.equals(userRequester))
+            throw new IllegalStateException("Incorrect user id");
+        // Delete user
+        userRepository.deleteById(id);
     }
 
     @Override

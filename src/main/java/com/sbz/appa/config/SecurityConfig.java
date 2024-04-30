@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/users/register/citizen").permitAll()
                         .requestMatchers("/v1/users/login", "/v1/users/update").authenticated()
                         .requestMatchers("/v1/roles/create", "/v1/roles/list", "v1/users/register/staff").hasRole("ADMIN")
+                        .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());

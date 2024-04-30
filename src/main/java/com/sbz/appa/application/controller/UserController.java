@@ -30,7 +30,7 @@ public class UserController {
     public ResponseEntity<UserDto> registerStaff(@RequestBody UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Validate user role
-        if(!(user.getRole().equals("ROLE_BISON") || user.getRole().equals("ROLE_ADMIN"))) {
+        if (!(user.getRole().equals("ROLE_BISON") || user.getRole().equals("ROLE_ADMIN"))) {
             throw new IllegalArgumentException("Invalid role");
         }
         return ResponseEntity
@@ -50,5 +50,13 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userUseCase.updateUser(user, authentication.getName()));
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id, Authentication authentication) {
+        userUseCase.deleteUser(id, authentication.getName());
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }

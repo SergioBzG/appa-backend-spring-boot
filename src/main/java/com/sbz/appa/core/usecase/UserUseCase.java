@@ -9,7 +9,7 @@ public interface UserUseCase {
 
     UserDto updateUser(UserDto userDto, String email);
 
-    void deleteUser(Long id);
+    void deleteUser(Long id, String email);
 
     UserDto getUserById(Long id);
 
