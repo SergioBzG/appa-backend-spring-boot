@@ -9,6 +9,7 @@ import com.sbz.appa.infrastructure.persistence.repository.RoleRepository;
 import com.sbz.appa.infrastructure.persistence.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserUseCaseImpl implements UserUseCase {
 
     private final UserRepository userRepository;
@@ -66,11 +68,6 @@ public class UserUseCaseImpl implements UserUseCase {
     }
 
     @Override
-    public UserDto getUserById(Long id) {
-        return null;
-    }
-
-    @Override
     public UserDto getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(userMapper::mapTo)
@@ -78,7 +75,12 @@ public class UserUseCaseImpl implements UserUseCase {
     }
 
     @Override
-    public List<UserDto> getUsers() {
-        return List.of();
+    public List<UserDto> getUserByRole(String role) {
+        role = "ROLE_"+role.toUpperCase();
+        RoleEntity roleEntity = roleRepository.findByName(role)
+                .orElseThrow(() -> new IllegalStateException("Role not found"));
+        return roleEntity.getUsers().stream()
+                .map(userMapper::mapTo)
+                .toList();
     }
 }

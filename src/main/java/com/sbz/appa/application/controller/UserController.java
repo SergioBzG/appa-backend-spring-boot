@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/v1/users")
 @AllArgsConstructor
@@ -58,5 +60,12 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    @GetMapping(value = "/role/{role}")
+    public ResponseEntity<List<UserDto>> getUserByRole(@PathVariable("role") String role) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUseCase.getUserByRole(role));
     }
 }

@@ -11,9 +11,7 @@ public interface UserUseCase {
 
     void deleteUser(Long id, String email);
 
-    UserDto getUserById(Long id);
-
     UserDto getUserByEmail(String email);
 
-    List<UserDto> getUsers();
+    List<UserDto> getUserByRole(String role);
 }
