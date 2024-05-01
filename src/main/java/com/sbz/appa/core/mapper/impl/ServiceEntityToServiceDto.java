@@ -4,14 +4,14 @@ import com.sbz.appa.application.dto.CarriageDto;
 import com.sbz.appa.application.dto.GuideDto;
 import com.sbz.appa.application.dto.PackageDto;
 import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.commons.Checkpoint;
+import com.sbz.appa.commons.Nation;
+import com.sbz.appa.commons.ServiceType;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.infrastructure.persistence.entity.CarriageEntity;
 import com.sbz.appa.infrastructure.persistence.entity.GuideEntity;
 import com.sbz.appa.infrastructure.persistence.entity.PackageEntity;
 import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
-import com.sbz.appa.infrastructure.persistence.utils.Checkpoint;
-import com.sbz.appa.infrastructure.persistence.utils.Nation;
-import com.sbz.appa.infrastructure.persistence.utils.ServiceType;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
