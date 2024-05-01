@@ -1,6 +1,7 @@
-package com.sbz.appa.infrastructure.persistence.entity;
+package com.sbz.appa.application.dto;
 
-import jakarta.persistence.*;
+
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,23 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-@Table(name = "carriages")
-public class CarriageEntity {
-    @Id
-    private Long serviceId;
-
-    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "service_id")
-    private ServiceEntity service;
-
+public class CarriageDto {
     @NotNull(message = "a pick up date is required")
+    @Future(message = "invalid pick up date")
     private LocalDateTime pickUp;
 
-    @Column(nullable = false)
     @NotBlank(message = "a description is required")
     @Size(max = 200, message = "description is too long")
     private String description;
-
 }

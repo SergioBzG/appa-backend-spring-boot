@@ -27,12 +27,12 @@ public class GuideEntity {
     @NotNull(message = "a service is required")
     private ServiceEntity service;
 
-    @Column(nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "an current nation is required")
     private Nation currentNation;
 
-    @Column(nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "an current checkpoint is required")
     private Checkpoint currentCheckpoint;

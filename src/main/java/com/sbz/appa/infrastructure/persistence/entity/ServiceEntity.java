@@ -34,7 +34,7 @@ public class ServiceEntity {
     @JoinColumn(name = "user_bison", referencedColumnName = "id")
     private UserEntity  userBison;
 
-    @Column(nullable = false)
+    @Column(length = 20)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "a type is required")
     private ServiceType type;
@@ -45,26 +45,25 @@ public class ServiceEntity {
 
     private LocalDateTime arrived;
 
-    @Column(nullable = false)
     @NotNull(message = "a price is required")
     private Double price;
 
-    @Column(nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "an origin nation is required")
     private Nation originNation;
 
-    @Column(nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "an destination nation is required")
     private Nation destinationNation;
 
-    @Column(nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "an origin checkpoint is required")
     private Checkpoint originCheckpoint;
 
-    @Column(nullable = false)
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "an destination checkpoint is required")
     private Checkpoint destinationCheckpoint;

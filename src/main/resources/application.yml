@@ -15,3 +15,5 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+    flyway:
+        baseline-on-migrate: true

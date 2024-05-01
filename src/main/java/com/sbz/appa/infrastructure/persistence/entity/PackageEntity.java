@@ -23,22 +23,18 @@ public class PackageEntity {
     @JoinColumn(name = "service_id")
     private ServiceEntity service;
 
-    @Column(nullable = false)
     @NotNull(message = "a length is required")
     @Range(min = 1, max = 1000)
     private Integer length;
 
-    @Column(nullable = false)
     @NotNull(message = "a width is required")
     @Range(min = 1, max = 1000)
     private Integer width;
 
-    @Column(nullable = false)
     @NotNull(message = "a height is required")
     @Range(min = 1, max = 1000)
     private Integer height;
 
-    @Column(nullable = false)
     @NotNull(message = "a weight is required")
     @Range(min = 1, max = 1000)
     private Integer weight;
