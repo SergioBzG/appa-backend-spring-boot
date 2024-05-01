@@ -1,0 +1,2 @@
+INSERT INTO roles (name, description) VALUES('ROLE_ADMIN', 'An admin user manages BISON users');
+INSERT INTO users (role_id, name, email, password) VALUES(1, 'SBZ', 'sbz@globant.com', '$2a$06$Ut0IcIkFjDC6tmMTPDRZseelShvlgREsyCRRbLiCxOlyaA825QrUi');
