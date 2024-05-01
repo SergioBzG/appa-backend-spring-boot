@@ -19,6 +19,6 @@ public class RoleDto {
     private String name;
 
     @NotBlank(message = "a description is required")
-    @Size(max = 100, message = "description is too long")
+    @Size(max = 250, message = "description is too long")
     private String description;
 }

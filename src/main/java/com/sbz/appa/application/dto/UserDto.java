@@ -1,6 +1,7 @@
 package com.sbz.appa.application.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,6 +30,10 @@ public class UserDto {
     @Email(message = "email is invalid")
     @Size(max = 50, message = "email is too long")
     private String email;
+
+    @NotBlank(message = "a password is required")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
     @Size(max = 25, message = "phone is too long")
     private String phone;

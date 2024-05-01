@@ -37,7 +37,15 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests // Permissions Configuration
-                        .requestMatchers("/v1/users").hasRole("ADMIN")
+                        .requestMatchers("/v1/users/register/citizen").permitAll()
+                        .requestMatchers("/v1/users/login", "/v1/users/update").authenticated()
+                        .requestMatchers(
+                                "/v1/roles/create",
+                                "/v1/roles/list",
+                                "v1/users/register/staff",
+                                "v1/users/role/{role}"
+                        ).hasRole("ADMIN")
+                        .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());

@@ -28,6 +28,7 @@ public class UserEntityToUserDtoMapper implements Mapper<UserEntity, UserDto> {
                 .document(userDto.getDocument())
                 .name(userDto.getName())
                 .email(userDto.getEmail())
+                .password(userDto.getPassword())
                 .phone(userDto.getPhone())
                 .vehicle(userDto.getVehicle())
                 .available(userDto.getAvailable())

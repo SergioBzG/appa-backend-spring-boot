@@ -29,7 +29,7 @@ public class RoleEntity {
 
     @Column(nullable = false)
     @NotBlank(message = "a description is required")
-    @Size(max = 100, message = "description is too long")
+    @Size(max = 250, message = "description is too long")
     private String description;
 
     @JsonIgnore
