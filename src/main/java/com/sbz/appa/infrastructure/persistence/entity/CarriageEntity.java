@@ -21,7 +21,7 @@ public class CarriageEntity {
     @Id
     private Long serviceId;
 
-    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "service_id")
     private ServiceEntity service;
@@ -34,4 +34,8 @@ public class CarriageEntity {
     @Size(max = 200, message = "description is too long")
     private String description;
 
+//    @PrePersist
+//    void preInsert() {
+//        this.serviceId = service.getId();
+//    }
 }

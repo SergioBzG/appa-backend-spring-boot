@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "v1/users/role/{role}"
                         ).hasRole("ADMIN")
                         .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
+                        .requestMatchers("/v1/services/create").hasRole("CITIZEN")
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());

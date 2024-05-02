@@ -22,7 +22,7 @@ public class GuideEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "service_id")
     @NotNull(message = "a service is required")
     private ServiceEntity service;

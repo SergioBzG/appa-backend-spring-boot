@@ -23,10 +23,10 @@ public class ServiceController {
     private final ServiceUseCase serviceUseCase;
 
     @PostMapping(value = "/create")
-    public ResponseEntity<ServiceDto> createService(ServiceDto serviceDto) {
+    public ResponseEntity<ServiceDto> createService(@RequestBody ServiceDto serviceDto, Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(serviceUseCase.saveService(serviceDto));
+                .body(serviceUseCase.saveService(serviceDto, authentication.getName()));
     }
 
     @PatchMapping(value = "/update")

@@ -69,4 +69,14 @@ public class UserEntity {
     void preInsert() {
         if (this.available == null) this.available = true;
     }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", role=" + role +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

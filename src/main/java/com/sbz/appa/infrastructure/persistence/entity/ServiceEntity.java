@@ -68,14 +68,14 @@ public class ServiceEntity {
     @NotNull(message = "an destination checkpoint is required")
     private Checkpoint destinationCheckpoint;
 
-    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn // which indicates that the primary key of the Service entity is used as the foreign key value for the associated Carriage entity
     private CarriageEntity carriageEntity;
 
-    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn // which indicates that the primary key of the Service entity is used as the foreign key value for the associated Package entity
     private PackageEntity packageEntity;
 
-    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER)
     private GuideEntity guide;
 }
