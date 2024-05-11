@@ -27,8 +27,11 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         log.info("Validating JWT token");
         String jwt = request.getHeader(SecurityConstants.JWT_HEADER);
+        log.info("Authorization {}", jwt);
         if (jwt != null) {
             try {
+                // Take only jwt token (header = `Bearer jtw`)
+                jwt = jwt.substring(7);
                 SecretKey key = Keys.hmacShaKeyFor(
                         SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
 
