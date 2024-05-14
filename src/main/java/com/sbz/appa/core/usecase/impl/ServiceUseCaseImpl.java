@@ -58,6 +58,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         guideEntity.setService(serviceEntity);
         guideRepository.save(guideEntity);
 
+        log.info("Service : {}", savedService);
         savedService.setPackageEntity(packageEntity);
         savedService.setGuide(guideEntity);
 

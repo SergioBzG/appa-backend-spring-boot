@@ -8,6 +8,7 @@ import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.utils.ServicePrice;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,12 +19,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping(path = "/v1/services")
 @AllArgsConstructor
+@Slf4j
 public class ServiceController {
 
     private final ServiceUseCase serviceUseCase;
 
     @PostMapping(value = "/create")
     public ResponseEntity<ServiceDto> createService(@RequestBody ServiceDto serviceDto, Authentication authentication) {
+        log.info("Creating service : {}", serviceDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(serviceUseCase.saveService(serviceDto, authentication.getName()));

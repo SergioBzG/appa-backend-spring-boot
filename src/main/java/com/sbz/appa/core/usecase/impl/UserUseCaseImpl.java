@@ -60,7 +60,7 @@ public class UserUseCaseImpl implements UserUseCase {
         UserEntity userRequester =  userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals("ROLE_ADMIN")) {
-            // TODO : type logic to looking for a new bison who takes the service that deleted bison had assigned, in case of deleted bison has an assigned service
+            // TODO : type logic to looking for a new bison who takes the service that deleted bison had assigned, in case of deleted bison has an assigned service. Verify if user to delete is a bison
         } else if (!userToDelete.equals(userRequester))
             throw new IllegalStateException("Incorrect user id");
         // Delete user
