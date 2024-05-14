@@ -59,7 +59,7 @@ public class UserEntity {
     @NotNull(message = "available field is required")
     private Boolean available;
 
-    @OneToMany(mappedBy = "userCitizen", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userCitizen", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ServiceEntity> citizenOrders;
 
     @OneToMany(mappedBy = "userBison", fetch = FetchType.LAZY)

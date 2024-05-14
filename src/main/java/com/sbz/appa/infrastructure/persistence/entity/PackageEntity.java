@@ -18,7 +18,7 @@ public class PackageEntity {
     @Id
     private Long serviceId;
 
-    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = ServiceEntity.class, fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "service_id")
     private ServiceEntity service;
@@ -43,4 +43,14 @@ public class PackageEntity {
 //    void preInsert() {
 //        this.serviceId = service.getId();
 //    }
+
+    @Override
+    public String toString() {
+        return "PackageEntity{" +
+                "length=" + length +
+                ", width=" + width +
+                ", height=" + height +
+                ", weight=" + weight +
+                '}';
+    }
 }

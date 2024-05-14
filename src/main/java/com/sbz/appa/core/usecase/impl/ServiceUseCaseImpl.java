@@ -20,18 +20,13 @@ import java.util.UUID;
 public class ServiceUseCaseImpl implements ServiceUseCase {
 
     private final ServiceRepository serviceRepository;
-    private final PackageRepository packageRepository;
-    private final CarriageRepository carriageRepository;
-    private final GuideRepository guideRepository;
     private final UserRepository userRepository;
     private final Mapper<ServiceEntity, ServiceDto> serviceMapper;
 
     @Override
     public ServiceDto saveService(ServiceDto serviceDto, String email) {
-        log.info("Creating service : {}", serviceDto);
         UserEntity userCitizen = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Citizen not found"));
-        // TODO : logic to looking for a bison for this service
         // Set guide
         serviceDto.setGuide(GuideDto.builder()
                 .currentNation(serviceDto.getOriginNation())
@@ -39,28 +34,15 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
                 .build()
         );
         ServiceEntity serviceEntity = serviceMapper.mapFrom(serviceDto);
-        log.info("Service entity : {}", serviceEntity);
+        // Set userCitizen
         serviceEntity.setUserCitizen(userCitizen);
-//        serviceEntity.setUserBison();
+        // TODO : logic to looking for a bison for this service
+        // serviceEntity.setUserBison();
 
         log.info("Saving service : {}", serviceEntity);
-        PackageEntity packageEntity = serviceEntity.getPackageEntity();
-        GuideEntity guideEntity = serviceEntity.getGuide();
-        serviceEntity.setPackageEntity(null);
-        serviceEntity.setGuide(null);
+        serviceEntity.getPackageEntity().setService(serviceEntity); // Persist
+        serviceEntity.getGuide().setService(serviceEntity); // Persist
         ServiceEntity savedService = serviceRepository.save(serviceEntity);
-
-        log.info("Saving package");
-        packageEntity.setService(savedService);
-        packageRepository.save(packageEntity);
-
-        log.info("Saving guide");
-        guideEntity.setService(serviceEntity);
-        guideRepository.save(guideEntity);
-
-        log.info("Service : {}", savedService);
-        savedService.setPackageEntity(packageEntity);
-        savedService.setGuide(guideEntity);
 
         return serviceMapper.mapTo(savedService);
     }
