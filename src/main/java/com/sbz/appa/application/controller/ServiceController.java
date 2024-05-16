@@ -7,7 +7,6 @@ import com.sbz.appa.application.dto.RouteDto;
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.utils.ServicePrice;
 import com.sbz.appa.core.usecase.ServiceUseCase;
-import com.sbz.appa.infrastructure.persistence.repository.ServiceRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,24 +23,12 @@ import java.util.UUID;
 public class ServiceController {
 
     private final ServiceUseCase serviceUseCase;
-    private final ServiceRepository serviceRepository; // Used for testing
 
     @PostMapping(value = "/create")
     public ResponseEntity<ServiceDto> createService(@RequestBody ServiceDto serviceDto, Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(serviceUseCase.saveService(serviceDto, authentication.getName()));
-    }
-
-    /**
-     * Only for testing
-     */
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<Void> deleteServices() {
-        serviceRepository.deleteAll();
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
     }
 
     @PatchMapping(value = "/update")

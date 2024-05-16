@@ -25,6 +25,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
     @Override
     public ServiceDto saveService(ServiceDto serviceDto, String email) {
+        log.info("Service dto {}", serviceDto);
         UserEntity userCitizen = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Citizen not found"));
         // Set guide
@@ -40,7 +41,11 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         // serviceEntity.setUserBison();
 
         log.info("Saving service : {}", serviceEntity);
-        serviceEntity.getPackageEntity().setService(serviceEntity); // Persist
+        // Set up package or carriage
+        if (serviceEntity.getPackageEntity() != null)
+            serviceEntity.getPackageEntity().setService(serviceEntity); // Persist
+        else
+            serviceEntity.getCarriageEntity().setService(serviceEntity); // Persist
         serviceEntity.getGuide().setService(serviceEntity); // Persist
         ServiceEntity savedService = serviceRepository.save(serviceEntity);
 
