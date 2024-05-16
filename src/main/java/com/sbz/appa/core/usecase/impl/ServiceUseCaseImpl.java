@@ -58,8 +58,18 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     }
 
     @Override
-    public ServiceDto getService(Long id) {
-        return null;
+    public ServiceDto getService(Long id, String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        ServiceEntity serviceEntity = serviceRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Service not found"));
+
+        if (user.getRole().getName().equals("ROLE_BISON") && (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email)))
+            throw new IllegalStateException("You do not have a service assigned with this id");
+        else if (user.getRole().getName().equals("ROLE_CITIZEN") && !serviceEntity.getUserCitizen().getEmail().equals(email))
+            throw new IllegalStateException("You do not have a service assigned with this id");
+
+        return serviceMapper.mapTo(serviceEntity);
     }
 
     @Override

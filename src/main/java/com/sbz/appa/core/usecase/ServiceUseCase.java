@@ -12,7 +12,7 @@ public interface ServiceUseCase {
 
     ServiceDto updateService(Long id, GuideDto newLocation);
 
-    ServiceDto getService(Long id);
+    ServiceDto getService(Long id, String email);
 
     Double getServicePrice(PathDto pathDto);
 

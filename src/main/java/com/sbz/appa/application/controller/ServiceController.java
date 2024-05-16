@@ -39,10 +39,10 @@ public class ServiceController {
     }
 
     @GetMapping(value = "/get/{id}")
-    public ResponseEntity<ServiceDto> getService(@PathVariable Long id) {
+    public ResponseEntity<ServiceDto> getService(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(serviceUseCase.getService(id));
+                .body(serviceUseCase.getService(id, authentication.getName()));
     }
 
     @GetMapping(value = "/price")
