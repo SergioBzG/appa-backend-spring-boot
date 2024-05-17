@@ -31,8 +31,8 @@ public class ServiceController {
                 .body(serviceUseCase.saveService(serviceDto, authentication.getName()));
     }
 
-    @PatchMapping(value = "/update")
-    public ResponseEntity<ServiceDto> updateService(Long id, GuideDto newLocation) {
+    @PatchMapping(value = "/update/{id}")
+    public ResponseEntity<ServiceDto> updateService(@PathVariable("id") Long id, @RequestBody GuideDto newLocation) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(serviceUseCase.updateService(id, newLocation));

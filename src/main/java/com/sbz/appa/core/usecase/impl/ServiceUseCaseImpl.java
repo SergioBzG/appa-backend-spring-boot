@@ -8,10 +8,12 @@ import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.*;
 import com.sbz.appa.infrastructure.persistence.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
     private final Mapper<ServiceEntity, ServiceDto> serviceMapper;
+    private final Mapper<GuideEntity, GuideDto> guideMapper;
 
     @Override
     public ServiceDto saveService(ServiceDto serviceDto, String email) {
@@ -52,9 +55,25 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         return serviceMapper.mapTo(savedService);
     }
 
+    @Transactional
     @Override
     public ServiceDto updateService(Long id, GuideDto newLocation) {
-        return null;
+        log.info("Service id {}", id);
+        ServiceEntity serviceEntity = serviceRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Service not found"));
+        GuideEntity newLocationEntity = guideMapper.mapFrom(newLocation);
+        // Update service guide
+        serviceEntity.getGuide().setCurrentNation(newLocationEntity.getCurrentNation());
+        serviceEntity.getGuide().setCurrentCheckpoint(newLocationEntity.getCurrentCheckpoint());
+
+        if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
+            // Package or Carriage has arrived to its destination
+            serviceEntity.setArrived(LocalDateTime.now());
+            // Release Bison and look for an available service for him/her
+            releaseBisonAndSearchForOrder(serviceEntity.getUserBison());
+        }
+
+        return serviceMapper.mapTo(serviceEntity);
     }
 
     @Override
@@ -90,5 +109,17 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     @Override
     public GuideDto trackService(UUID guideId) {
         return null;
+    }
+
+    @Transactional
+    private void releaseBisonAndSearchForOrder(UserEntity userBison) {
+        // Release bison
+        userBison.setAvailable(true);
+        // Search for order
+        serviceRepository.findFirstByArrivedIsNullAndUserBisonIsNullOrderByCreatedAsc()
+                .ifPresent(service -> {
+                    service.setUserBison(userBison);
+                    userBison.setAvailable(false);
+                });
     }
 }
