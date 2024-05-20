@@ -4,6 +4,7 @@ import com.sbz.appa.application.dto.GuideDto;
 import com.sbz.appa.application.dto.PathDto;
 import com.sbz.appa.application.dto.RouteDto;
 import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.commons.ServiceType;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.*;
@@ -57,19 +58,29 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
     @Transactional
     @Override
-    public ServiceDto updateService(Long id, GuideDto newLocation) {
+    public ServiceDto updateService(Long id, GuideDto newLocation, String email, Double price) {
         log.info("Service id {}", id);
         ServiceEntity serviceEntity = serviceRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Service not found"));
+
         GuideEntity newLocationEntity = guideMapper.mapFrom(newLocation);
         // Update service guide
         serviceEntity.getGuide().setCurrentNation(newLocationEntity.getCurrentNation());
         serviceEntity.getGuide().setCurrentCheckpoint(newLocationEntity.getCurrentCheckpoint());
 
-        if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
+        if (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email))
+            throw new IllegalStateException("You do not have a service assigned with this id");
+        else if (serviceEntity.getArrived() != null)
+            throw new IllegalStateException("Service has already arrived to its destination");
+        else  if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
             // Package or Carriage has arrived to its destination
+            if (serviceEntity.getType() == ServiceType.CARRIAGE && price == null)
+                throw new IllegalStateException("Price is required for carriage service");
+            else if (serviceEntity.getType() == ServiceType.CARRIAGE)
+                serviceEntity.setPrice(price);
+
             serviceEntity.setArrived(LocalDateTime.now());
-            // Release Bison and look for an available service for him/her
+            // Release Bison and look for an available service for them
             releaseBisonAndSearchForOrder(serviceEntity.getUserBison());
         }
 
@@ -112,7 +123,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     }
 
     @Transactional
-    private void releaseBisonAndSearchForOrder(UserEntity userBison) {
+    protected void releaseBisonAndSearchForOrder(UserEntity userBison) {
         // Release bison
         userBison.setAvailable(true);
         // Search for order

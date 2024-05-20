@@ -32,10 +32,14 @@ public class ServiceController {
     }
 
     @PatchMapping(value = "/update/{id}")
-    public ResponseEntity<ServiceDto> updateService(@PathVariable("id") Long id, @RequestBody GuideDto newLocation) {
+    public ResponseEntity<ServiceDto> updateService(
+            @PathVariable("id") Long id,
+            @RequestBody GuideDto newLocation,
+            @RequestParam(required = false) Double price,
+            Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(serviceUseCase.updateService(id, newLocation));
+                .body(serviceUseCase.updateService(id, newLocation, authentication.getName(), price));
     }
 
     @GetMapping(value = "/get/{id}")
