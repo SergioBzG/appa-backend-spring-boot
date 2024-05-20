@@ -44,8 +44,7 @@ public class SecurityConfig {
                                 "/v1/roles/list",
                                 "v1/users/register/staff",
                                 "v1/users/role/{role}",
-                                "v1/roles/delete/{id}", // only for testing
-                                "/v1/services/delete" // only for testing
+                                "v1/roles/delete/{id}" // only for testing
                         ).hasRole("ADMIN")
                         .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
                         .requestMatchers("/v1/services/create").hasRole("CITIZEN")
