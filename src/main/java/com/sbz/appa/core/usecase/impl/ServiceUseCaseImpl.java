@@ -81,7 +81,8 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
             serviceEntity.setArrived(LocalDateTime.now());
             // Release Bison and look for an available service for them
-            releaseBisonAndSearchForOrder(serviceEntity.getUserBison());
+            serviceEntity.getUserBison().setAvailable(true);
+            searchForOrder(serviceEntity.getUserBison());
         }
 
         return serviceMapper.mapTo(serviceEntity);
@@ -123,9 +124,8 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     }
 
     @Transactional
-    protected void releaseBisonAndSearchForOrder(UserEntity userBison) {
-        // Release bison
-        userBison.setAvailable(true);
+    @Override
+    public void searchForOrder(UserEntity userBison) {
         // Search for order
         serviceRepository.findFirstByArrivedIsNullAndUserBisonIsNullOrderByCreatedAsc()
                 .ifPresent(service -> {

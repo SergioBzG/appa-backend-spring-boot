@@ -2,6 +2,7 @@ package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.UserDto;
 import com.sbz.appa.core.mapper.Mapper;
+import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.core.usecase.UserUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.RoleEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
@@ -24,6 +25,7 @@ public class UserUseCaseImpl implements UserUseCase {
     private final RoleRepository roleRepository;
     private final Mapper<UserEntity, UserDto> userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ServiceUseCase serviceUseCase;
 
     @Override
     public UserDto saveUser(UserDto userDto) {
@@ -31,7 +33,13 @@ public class UserUseCaseImpl implements UserUseCase {
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
         UserEntity userEntity = userMapper.mapFrom(userDto);
         userEntity.setRole(role);
-        return userMapper.mapTo(userRepository.save(userEntity));
+        UserEntity savedUser = userRepository.save(userEntity);
+
+        // Look for order for the new bison
+        if (savedUser.getRole().getName().equals("ROLE_BISON"))
+            serviceUseCase.searchForOrder(savedUser);
+
+        return userMapper.mapTo(savedUser);
     }
 
     @Transactional

@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
                         .requestMatchers("/v1/services/create").hasRole("CITIZEN")
                         .requestMatchers("/v1/services/get/{id}").hasAnyRole("CITIZEN", "BISON")
-                        .requestMatchers("/v1/services/update/{id}").hasAnyRole("BISON")
+                        .requestMatchers("/v1/services/update/{id}").hasRole("BISON")
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());
