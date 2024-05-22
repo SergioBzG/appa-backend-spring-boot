@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -58,6 +59,8 @@ public class UserEntity {
     @Column(columnDefinition = "boolean default true")
     @NotNull(message = "available field is required")
     private Boolean available;
+
+    private LocalDateTime lastDelivery;
 
     @OneToMany(mappedBy = "userCitizen", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ServiceEntity> citizenOrders;

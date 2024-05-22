@@ -4,8 +4,8 @@ import com.sbz.appa.application.dto.GuideDto;
 import com.sbz.appa.application.dto.PathDto;
 import com.sbz.appa.application.dto.RouteDto;
 import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
-import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 
@@ -25,4 +25,6 @@ public interface ServiceUseCase {
     GuideDto trackService(UUID guideId);
 
     void searchForOrder(UserEntity userBison);
+
+    void searchForBison(ServiceEntity serviceEntity);
 }

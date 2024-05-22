@@ -5,6 +5,7 @@ import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.core.usecase.UserUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.RoleEntity;
+import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 import com.sbz.appa.infrastructure.persistence.repository.RoleRepository;
 import com.sbz.appa.infrastructure.persistence.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -68,7 +70,10 @@ public class UserUseCaseImpl implements UserUseCase {
         UserEntity userRequester =  userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals("ROLE_ADMIN")) {
-            // TODO : type logic to looking for a new bison who takes the service that deleted bison had assigned, in case of deleted bison has an assigned service. Verify if user to delete is a bison
+            Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
+                    .filter(service -> service.getArrived() == null)
+                    .findFirst();
+            serviceToDeliver.ifPresent(serviceUseCase::searchForBison);
         } else if (!userToDelete.equals(userRequester))
             throw new IllegalStateException("Incorrect user id");
         // Delete user

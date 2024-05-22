@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,8 +42,9 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         ServiceEntity serviceEntity = serviceMapper.mapFrom(serviceDto);
         // Set userCitizen
         serviceEntity.setUserCitizen(userCitizen);
-        // TODO : logic to looking for a bison for this service
-        // serviceEntity.setUserBison();
+
+        // look for a bison for this service and set it
+        searchForBison(serviceEntity);
 
         log.info("Saving service : {}", serviceEntity);
         // Set up package or carriage
@@ -82,6 +84,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
             serviceEntity.setArrived(LocalDateTime.now());
             // Release Bison and look for an available service for them
             serviceEntity.getUserBison().setAvailable(true);
+            serviceEntity.getUserBison().setLastDelivery(LocalDateTime.now());
             searchForOrder(serviceEntity.getUserBison());
         }
 
@@ -132,5 +135,25 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
                     service.setUserBison(userBison);
                     userBison.setAvailable(false);
                 });
+    }
+
+    @Override
+    public void searchForBison(ServiceEntity serviceEntity) {
+        // First, look for a bison who has never had a service
+        Optional<UserEntity> bisonWithoutOrders = userRepository
+                .findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNull("ROLE_BISON");
+        if(bisonWithoutOrders.isPresent()){
+            serviceEntity.setUserBison(bisonWithoutOrders.get());
+            bisonWithoutOrders.get().setAvailable(false);
+            return;
+        }
+
+        // If any, look for bison with more time available
+        Optional<UserEntity> moreTimeAvailableBison = userRepository
+                .findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNotNullOrderByLastDeliveryAsc("ROLE_BISON");
+        if(moreTimeAvailableBison.isPresent()){
+            serviceEntity.setUserBison(moreTimeAvailableBison.get());
+            moreTimeAvailableBison.get().setAvailable(false);
+        }
     }
 }
