@@ -1,5 +1,6 @@
 package com.sbz.appa.core.usecase.impl;
 
+import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
@@ -15,8 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -25,9 +28,10 @@ public class UserUseCaseImpl implements UserUseCase {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final Mapper<UserEntity, UserDto> userMapper;
     private final PasswordEncoder passwordEncoder;
     private final ServiceUseCase serviceUseCase;
+    private final Mapper<UserEntity, UserDto> userMapper;
+    private final Mapper<ServiceEntity, ServiceDto> serviceMapper;
 
     @Override
     public UserDto saveUser(UserDto userDto) {
@@ -96,4 +100,82 @@ public class UserUseCaseImpl implements UserUseCase {
                 .map(userMapper::mapTo)
                 .toList();
     }
+
+    @Override
+    public List<ServiceDto> getUserServices(String email, String serviceType) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        Stream<ServiceDto> userServices = Stream.empty();
+        if (userEntity.getRole().getName().equals("ROLE_CITIZEN"))
+            userServices = userEntity.getCitizenOrders().stream()
+                    .map(serviceMapper::mapTo);
+        else if (userEntity.getRole().getName().equals("ROLE_BISON"))
+            userServices = userEntity.getBisonOrders().stream()
+                    .map(serviceMapper::mapTo);
+
+        if (serviceType != null)
+            return userServices
+                    .filter(service -> service.getType().equalsIgnoreCase(serviceType))
+                    .toList();
+        return userServices.toList();
+    }
+
+    @Override
+    public ServiceDto getLastService(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        return userEntity.getCitizenOrders().stream()
+                .max(Comparator.comparing(ServiceEntity::getCreated))
+                .map(serviceMapper::mapTo)
+                .orElseThrow(() -> new IllegalStateException("User does not have services"));
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

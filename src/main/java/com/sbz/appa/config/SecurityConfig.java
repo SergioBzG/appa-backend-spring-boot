@@ -47,8 +47,14 @@ public class SecurityConfig {
                                 "v1/roles/delete/{id}" // only for testing
                         ).hasRole("ADMIN")
                         .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
-                        .requestMatchers("/v1/services/create").hasRole("CITIZEN")
-                        .requestMatchers("/v1/services/get/{id}").hasAnyRole("CITIZEN", "BISON")
+                        .requestMatchers(
+                                "/v1/services/create",
+                                "/v1/users/get/services/last-service"
+                        ).hasRole("CITIZEN")
+                        .requestMatchers(
+                                "/v1/services/get/{id}",
+                                "/v1/users/get/services"
+                        ).hasAnyRole("CITIZEN", "BISON")
                         .requestMatchers("/v1/services/update/{id}").hasRole("BISON")
                 )
                 .formLogin(withDefaults())
