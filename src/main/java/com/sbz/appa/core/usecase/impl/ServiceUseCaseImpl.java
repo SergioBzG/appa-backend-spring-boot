@@ -117,11 +117,6 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     }
 
     @Override
-    public ServiceDto getActiveService(String email) {
-        return null;
-    }
-
-    @Override
     public GuideDto trackService(UUID guideId) {
         return null;
     }

@@ -130,52 +130,15 @@ public class UserUseCaseImpl implements UserUseCase {
                 .map(serviceMapper::mapTo)
                 .orElseThrow(() -> new IllegalStateException("User does not have services"));
     }
+
+    @Override
+    public ServiceDto getActiveService(String email) {
+        UserEntity bison = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        return bison.getBisonOrders().stream()
+                .findFirst()
+                .map(serviceMapper::mapTo)
+                .orElseThrow(() -> new IllegalStateException("User does not have active services"));
+
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

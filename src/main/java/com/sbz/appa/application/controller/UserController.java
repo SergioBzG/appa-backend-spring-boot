@@ -84,69 +84,11 @@ public class UserController {
                 .body(userUseCase.getLastService(authentication.getName()));
     }
 
+    @GetMapping(value = "/get/services/active")
+    public ResponseEntity<ServiceDto> getActiveServiceOfBison(Authentication authentication) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUseCase.getActiveService(authentication.getName()));
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -19,4 +19,6 @@ public interface UserUseCase {
     List<ServiceDto> getUserServices(String email, String serviceType);
 
     ServiceDto getLastService(String email);
+
+    ServiceDto getActiveService(String email);
 }

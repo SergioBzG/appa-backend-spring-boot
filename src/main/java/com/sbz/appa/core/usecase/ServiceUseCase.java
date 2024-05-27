@@ -20,8 +20,6 @@ public interface ServiceUseCase {
 
     RouteDto getOptimalRoute(PathDto pathDto);
 
-    ServiceDto getActiveService(String email);
-
     GuideDto trackService(UUID guideId);
 
     void searchForOrder(UserEntity userBison);

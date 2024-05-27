@@ -63,13 +63,6 @@ public class ServiceController {
                 .body(serviceUseCase.getOptimalRoute(pathDto));
     }
 
-    @GetMapping(value = "/active")
-    public ResponseEntity<ServiceDto> getRoute(Authentication authentication) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(serviceUseCase.getActiveService(authentication.getName()));
-    }
-
     @GetMapping(value = "/track/{guideId}")
     public ResponseEntity<GuideDto> trackService(@PathVariable String guideId) {
         return ResponseEntity
