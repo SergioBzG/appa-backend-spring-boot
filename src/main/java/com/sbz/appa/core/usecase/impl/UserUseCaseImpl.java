@@ -135,10 +135,8 @@ public class UserUseCaseImpl implements UserUseCase {
     public ServiceDto getActiveService(String email) {
         UserEntity bison = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
-        return bison.getBisonOrders().stream()
-                .findFirst()
-                .map(serviceMapper::mapTo)
-                .orElseThrow(() -> new IllegalStateException("User does not have active services"));
+        return serviceUseCase.getActiveService(bison.getId())
+                .orElseThrow(() -> new IllegalStateException("Bison does not have any active service"));
 
     }
 }

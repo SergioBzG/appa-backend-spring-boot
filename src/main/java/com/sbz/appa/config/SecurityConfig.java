@@ -57,9 +57,8 @@ public class SecurityConfig {
                         ).hasAnyRole("CITIZEN", "BISON")
                         .requestMatchers(
                                 "/v1/services/update/{id}",
-                                "v1/users/get/services/active"
-                        )
-                        .hasRole("BISON")
+                                "/v1/users/get/services/active"
+                        ).hasRole("BISON")
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());

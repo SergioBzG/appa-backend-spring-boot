@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
     Optional<ServiceEntity> findFirstByArrivedIsNullAndUserBisonIsNullOrderByCreatedAsc();
+    Optional<ServiceEntity> findFirstByArrivedIsNullAndUserBisonId(Long id);
 }

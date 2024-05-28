@@ -151,4 +151,10 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
             moreTimeAvailableBison.get().setAvailable(false);
         }
     }
+
+    @Override
+    public Optional<ServiceDto> getActiveService(Long bisonId) {
+        return serviceRepository.findFirstByArrivedIsNullAndUserBisonId(bisonId)
+                .map(serviceMapper::mapTo);
+    }
 }

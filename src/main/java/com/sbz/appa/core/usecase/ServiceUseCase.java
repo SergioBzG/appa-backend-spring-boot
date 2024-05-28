@@ -7,6 +7,7 @@ import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ServiceUseCase {
@@ -25,4 +26,6 @@ public interface ServiceUseCase {
     void searchForOrder(UserEntity userBison);
 
     void searchForBison(ServiceEntity serviceEntity);
+
+    Optional<ServiceDto> getActiveService(Long bisonId);
 }
