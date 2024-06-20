@@ -1,9 +1,13 @@
 package com.sbz.appa.core.usecase.impl;
 
+import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
+import com.sbz.appa.application.utils.Role;
 import com.sbz.appa.core.mapper.Mapper;
+import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.core.usecase.UserUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.RoleEntity;
+import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 import com.sbz.appa.infrastructure.persistence.repository.RoleRepository;
 import com.sbz.appa.infrastructure.persistence.repository.UserRepository;
@@ -13,7 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -22,8 +29,10 @@ public class UserUseCaseImpl implements UserUseCase {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final Mapper<UserEntity, UserDto> userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ServiceUseCase serviceUseCase;
+    private final Mapper<UserEntity, UserDto> userMapper;
+    private final Mapper<ServiceEntity, ServiceDto> serviceMapper;
 
     @Override
     public UserDto saveUser(UserDto userDto) {
@@ -31,7 +40,13 @@ public class UserUseCaseImpl implements UserUseCase {
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
         UserEntity userEntity = userMapper.mapFrom(userDto);
         userEntity.setRole(role);
-        return userMapper.mapTo(userRepository.save(userEntity));
+        UserEntity savedUser = userRepository.save(userEntity);
+
+        // Look for order for the new bison
+        if (savedUser.getRole().getName().equals(Role.ROLE_BISON.name()))
+            serviceUseCase.searchForOrder(savedUser);
+
+        return userMapper.mapTo(savedUser);
     }
 
     @Transactional
@@ -59,8 +74,11 @@ public class UserUseCaseImpl implements UserUseCase {
                 .orElseThrow(() -> new IllegalStateException("User with this id not found"));
         UserEntity userRequester =  userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
-        if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals("ROLE_ADMIN")) {
-            // TODO : type logic to looking for a new bison who takes the service that deleted bison had assigned, in case of deleted bison has an assigned service
+        if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals(Role.ROLE_ADMIN.name())) {
+            Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
+                    .filter(service -> service.getArrived() == null)
+                    .findFirst();
+            serviceToDeliver.ifPresent(serviceUseCase::searchForBison);
         } else if (!userToDelete.equals(userRequester))
             throw new IllegalStateException("Incorrect user id");
         // Delete user
@@ -82,5 +100,45 @@ public class UserUseCaseImpl implements UserUseCase {
         return roleEntity.getUsers().stream()
                 .map(userMapper::mapTo)
                 .toList();
+    }
+
+    @Override
+    public List<ServiceDto> getUserServices(String email, String serviceType) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        Stream<ServiceDto> userServices;
+        if (userEntity.getRole().getName().equals(Role.ROLE_CITIZEN.name()))
+            userServices = userEntity.getCitizenOrders().stream()
+                    .map(serviceMapper::mapTo);
+        else
+            userServices = userEntity.getBisonOrders().stream()
+                    .map(serviceMapper::mapTo);
+
+        if (serviceType != null)
+            return userServices
+                    .filter(service -> service.getType().equalsIgnoreCase(serviceType))
+                    .toList();
+        return userServices.toList();
+    }
+
+    @Override
+    public ServiceDto getLastService(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        // TODO : refactoring this query using jpql (consider move it to Service Repository)
+        return userEntity.getCitizenOrders().stream()
+                .max(Comparator.comparing(ServiceEntity::getCreated))
+                .map(serviceMapper::mapTo)
+                .orElseThrow(() -> new IllegalStateException("User does not have services"));
+    }
+
+    @Override
+    public ServiceDto getActiveService(String email) {
+        UserEntity bison = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        return serviceUseCase.getActiveService(bison.getId())
+                .orElseThrow(() -> new IllegalStateException("Bison does not have any active service"));
+
     }
 }

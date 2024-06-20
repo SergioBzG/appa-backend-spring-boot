@@ -14,6 +14,7 @@ import com.sbz.appa.infrastructure.persistence.entity.PackageEntity;
 import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.ZoneId;
 
 @Component
@@ -21,8 +22,12 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
     @Override
     public ServiceDto mapTo(ServiceEntity serviceEntity) {
         return ServiceDto.builder()
+                .id(serviceEntity.getId())
                 .userCitizen(serviceEntity.getUserCitizen().getId())
-                .userBison(serviceEntity.getUserBison().getId())
+                .userBison(
+                        serviceEntity.getUserBison() == null ? null :
+                                serviceEntity.getUserBison().getId()
+                        )
                 .type(serviceEntity.getType().name())
                 .created(serviceEntity.getCreated().atZone(ZoneId.of("America/Bogota")).toLocalDateTime())
                 .arrived(serviceEntity.getArrived())
@@ -46,8 +51,9 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
     @Override
     public ServiceEntity mapFrom(ServiceDto serviceDto) {
         return ServiceEntity.builder()
+                .id(serviceDto.getId())
                 .type(ServiceType.valueOf(serviceDto.getType()))
-                .created(serviceDto.getCreated().atZone(ZoneId.of("America/Bogota")).toInstant())
+                .created(getCreatedDateTime(serviceDto))
                 .arrived(serviceDto.getArrived())
                 .price(serviceDto.getPrice())
                 .originNation(Nation.valueOf(serviceDto.getOriginNation()))
@@ -100,5 +106,9 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
                         .pickUp(serviceDto.getCarriageEntity().getPickUp())
                         .description(serviceDto.getCarriageEntity().getDescription())
                         .build();
+    }
+
+    private Instant getCreatedDateTime(ServiceDto serviceDto) {
+        return serviceDto.getCreated() == null ? null : serviceDto.getCreated().atZone(ZoneId.of("America/Bogota")).toInstant();
     }
 }

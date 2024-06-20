@@ -22,33 +22,53 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> { // CORS Configuration
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("*")); // All origins
-                    config.setAllowedMethods(Collections.singletonList("*"));
-                    config.setAllowCredentials(true);
-                    config.setAllowedHeaders(Collections.singletonList("*"));
-                    config.setExposedHeaders(List.of("Authorization")); // Expose Authorization header
-                    config.setMaxAge(3600L);
-                    return config;
-                }))
-                .csrf(AbstractHttpConfigurer::disable) // CSRF Configuration
-                .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(requests -> requests // Permissions Configuration
-                        .requestMatchers("/v1/users/register/citizen").permitAll()
-                        .requestMatchers("/v1/users/login", "/v1/users/update").authenticated()
-                        .requestMatchers(
-                                "/v1/roles/create",
-                                "/v1/roles/list",
-                                "v1/users/register/staff",
-                                "v1/users/role/{role}"
-                        ).hasRole("ADMIN")
-                        .requestMatchers("/v1/users/delete/{id}").hasAnyRole("ADMIN", "CITIZEN")
-                )
-                .formLogin(withDefaults())
-                .httpBasic(withDefaults());
+        http
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> { // CORS Configuration
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Collections.singletonList("*")); // All origins
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowCredentials(true);
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setExposedHeaders(List.of("Authorization")); // Expose Authorization header
+                config.setMaxAge(3600L);
+                return config;
+            }))
+            .csrf(AbstractHttpConfigurer::disable) // CSRF Configuration
+            .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+            .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+            .authorizeHttpRequests(requests -> requests // Permissions Configuration
+                    .requestMatchers(
+                            "/v1/users/register/citizen"
+                    ).permitAll()
+                    .requestMatchers(
+                            "/v1/users/login", "/v1/users/update"
+                    ).authenticated()
+                    .requestMatchers(
+                            "/v1/roles/create",
+                            "/v1/roles/list",
+                            "v1/users/register/staff",
+                            "v1/users/role/{role}",
+                            "v1/roles/delete/{id}" // only for testing
+                    ).hasRole("ADMIN")
+                    .requestMatchers(
+                            "/v1/users/delete/{id}"
+                    ).hasAnyRole("ADMIN", "CITIZEN")
+                    .requestMatchers(
+                            "/v1/services/create",
+                            "/v1/users/get/services/last-service"
+                    ).hasRole("CITIZEN")
+                    .requestMatchers(
+                            "/v1/services/get/{id}",
+                            "/v1/users/get/services"
+                    ).hasAnyRole("CITIZEN", "BISON")
+                    .requestMatchers(
+                            "/v1/services/update/{id}",
+                            "/v1/users/get/services/active"
+                    ).hasRole("BISON")
+            )
+            .formLogin(withDefaults())
+            .httpBasic(withDefaults());
         return http.build();
     }
 

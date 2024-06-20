@@ -34,4 +34,9 @@ public class RoleUseCaseImpl implements RoleUseCase {
                 .map(roleMapper::mapTo)
                 .toList();
     }
+
+    @Override
+    public void deleteRole(Long id) {
+        roleRepository.deleteById(id);
+    }
 }

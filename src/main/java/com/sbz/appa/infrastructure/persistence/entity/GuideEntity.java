@@ -22,7 +22,7 @@ public class GuideEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(targetEntity = ServiceEntity.class, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = ServiceEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "service_id")
     @NotNull(message = "a service is required")
     private ServiceEntity service;
@@ -37,4 +37,12 @@ public class GuideEntity {
     @NotNull(message = "an current checkpoint is required")
     private Checkpoint currentCheckpoint;
 
+    @Override
+    public String toString() {
+        return "GuideEntity{" +
+                "id=" + id +
+                ", currentNation=" + currentNation +
+                ", currentCheckpoint=" + currentCheckpoint +
+                '}';
+    }
 }

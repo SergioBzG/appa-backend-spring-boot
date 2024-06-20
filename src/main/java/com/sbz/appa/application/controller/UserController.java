@@ -1,6 +1,8 @@
 package com.sbz.appa.application.controller;
 
+import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
+import com.sbz.appa.application.utils.Role;
 import com.sbz.appa.core.usecase.UserUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ public class UserController {
     @PostMapping(value = "/register/citizen")
     public ResponseEntity<UserDto> registerCitizen(@RequestBody UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole("ROLE_CITIZEN");
+        user.setRole(Role.ROLE_BISON.name());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userUseCase.saveUser(user));
@@ -32,9 +34,9 @@ public class UserController {
     public ResponseEntity<UserDto> registerStaff(@RequestBody UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Validate user role
-        if (!(user.getRole().equals("ROLE_BISON") || user.getRole().equals("ROLE_ADMIN"))) {
+        if (!(user.getRole().equals(Role.ROLE_BISON.name()) || user.getRole().equals(Role.ROLE_ADMIN.name())))
             throw new IllegalArgumentException("Invalid role");
-        }
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userUseCase.saveUser(user));
@@ -68,4 +70,26 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(userUseCase.getUserByRole(role));
     }
+
+    @GetMapping(value = "/get/services")
+    public ResponseEntity<List<ServiceDto>> getUserServices(@RequestParam(value = "type", required = false) String serviceType, Authentication authentication) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUseCase.getUserServices(authentication.getName(), serviceType));
+    }
+
+    @GetMapping(value = "/get/services/last-service")
+    public ResponseEntity<ServiceDto> getLastServiceOfUser(Authentication authentication) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUseCase.getLastService(authentication.getName()));
+    }
+
+    @GetMapping(value = "/get/services/active")
+    public ResponseEntity<ServiceDto> getActiveServiceOfBison(Authentication authentication) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userUseCase.getActiveService(authentication.getName()));
+    }
+
 }

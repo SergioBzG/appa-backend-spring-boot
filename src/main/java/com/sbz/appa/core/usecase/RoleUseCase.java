@@ -9,4 +9,5 @@ public interface RoleUseCase {
 
     List<RoleDto> getRoles();
 
+    void deleteRole(Long id);
 }

@@ -26,7 +26,7 @@ public class ServiceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = UserEntity.class, cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_citizen", referencedColumnName = "id")
     private UserEntity  userCitizen;
 
@@ -68,14 +68,14 @@ public class ServiceEntity {
     @NotNull(message = "an destination checkpoint is required")
     private Checkpoint destinationCheckpoint;
 
-    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn // which indicates that the primary key of the Service entity is used as the foreign key value for the associated Carriage entity
     private CarriageEntity carriageEntity;
 
-    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn // which indicates that the primary key of the Service entity is used as the foreign key value for the associated Package entity
     private PackageEntity packageEntity;
 
-    @OneToOne(mappedBy = "service", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     private GuideEntity guide;
 }

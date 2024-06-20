@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -59,7 +60,9 @@ public class UserEntity {
     @NotNull(message = "available field is required")
     private Boolean available;
 
-    @OneToMany(mappedBy = "userCitizen", fetch = FetchType.LAZY)
+    private LocalDateTime lastDelivery;
+
+    @OneToMany(mappedBy = "userCitizen", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ServiceEntity> citizenOrders;
 
     @OneToMany(mappedBy = "userBison", fetch = FetchType.LAZY)
@@ -68,5 +71,15 @@ public class UserEntity {
     @PrePersist
     void preInsert() {
         if (this.available == null) this.available = true;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", role=" + role +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

@@ -18,6 +18,7 @@ public class UserEntityToUserDtoMapper implements Mapper<UserEntity, UserDto> {
                 .phone(userEntity.getPhone())
                 .vehicle(userEntity.getVehicle())
                 .available(userEntity.getAvailable())
+                .lastDelivery(userEntity.getLastDelivery())
                 .build();
     }
 
@@ -32,6 +33,7 @@ public class UserEntityToUserDtoMapper implements Mapper<UserEntity, UserDto> {
                 .phone(userDto.getPhone())
                 .vehicle(userDto.getVehicle())
                 .available(userDto.getAvailable())
+                .lastDelivery(userDto.getLastDelivery())
                 .build();
     }
 }

@@ -35,4 +35,11 @@ public class RoleEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<UserEntity> users;
+
+    @Override
+    public String toString() {
+        return "RoleEntity{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
