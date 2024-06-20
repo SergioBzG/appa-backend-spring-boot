@@ -4,6 +4,7 @@ import com.sbz.appa.application.dto.GuideDto;
 import com.sbz.appa.application.dto.PathDto;
 import com.sbz.appa.application.dto.RouteDto;
 import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.application.utils.Role;
 import com.sbz.appa.commons.ServiceType;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
@@ -43,7 +44,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         // Set userCitizen
         serviceEntity.setUserCitizen(userCitizen);
 
-        // look for a bison for this service and set it
+        // Look for a bison for this service and set it
         searchForBison(serviceEntity);
 
         log.info("Saving service : {}", serviceEntity);
@@ -53,9 +54,8 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         else
             serviceEntity.getCarriageEntity().setService(serviceEntity); // Persist
         serviceEntity.getGuide().setService(serviceEntity); // Persist
-        ServiceEntity savedService = serviceRepository.save(serviceEntity);
 
-        return serviceMapper.mapTo(savedService);
+        return serviceMapper.mapTo(serviceRepository.save(serviceEntity));
     }
 
     @Transactional
@@ -83,9 +83,10 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
             serviceEntity.setArrived(LocalDateTime.now());
             // Release Bison and look for an available service for them
-            serviceEntity.getUserBison().setAvailable(true);
-            serviceEntity.getUserBison().setLastDelivery(LocalDateTime.now());
-            searchForOrder(serviceEntity.getUserBison());
+            UserEntity bison = serviceEntity.getUserBison();
+            bison.setAvailable(true);
+            bison.setLastDelivery(LocalDateTime.now());
+            searchForOrder(bison);
         }
 
         return serviceMapper.mapTo(serviceEntity);
@@ -98,9 +99,11 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         ServiceEntity serviceEntity = serviceRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Service not found"));
 
-        if (user.getRole().getName().equals("ROLE_BISON") && (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email)))
+        if (user.getRole().getName().equals(Role.ROLE_BISON.name())
+                && (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email)))
             throw new IllegalStateException("You do not have a service assigned with this id");
-        else if (user.getRole().getName().equals("ROLE_CITIZEN") && !serviceEntity.getUserCitizen().getEmail().equals(email))
+        else if (user.getRole().getName().equals(Role.ROLE_CITIZEN.name())
+                && !serviceEntity.getUserCitizen().getEmail().equals(email))
             throw new IllegalStateException("You do not have a service assigned with this id");
 
         return serviceMapper.mapTo(serviceEntity);
@@ -121,6 +124,12 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         return null;
     }
 
+    @Override
+    public Optional<ServiceDto> getActiveService(Long bisonId) {
+        return serviceRepository.findFirstByArrivedIsNullAndUserBisonId(bisonId)
+                .map(serviceMapper::mapTo);
+    }
+
     @Transactional
     @Override
     public void searchForOrder(UserEntity userBison) {
@@ -136,7 +145,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     public void searchForBison(ServiceEntity serviceEntity) {
         // First, look for a bison who has never had a service
         Optional<UserEntity> bisonWithoutOrders = userRepository
-                .findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNull("ROLE_BISON");
+                .findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNull(Role.ROLE_BISON.name());
         if(bisonWithoutOrders.isPresent()){
             serviceEntity.setUserBison(bisonWithoutOrders.get());
             bisonWithoutOrders.get().setAvailable(false);
@@ -145,16 +154,11 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
         // If any, look for bison with more time available
         Optional<UserEntity> moreTimeAvailableBison = userRepository
-                .findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNotNullOrderByLastDeliveryAsc("ROLE_BISON");
+                .findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNotNullOrderByLastDeliveryAsc(
+                        Role.ROLE_BISON.name());
         if(moreTimeAvailableBison.isPresent()){
             serviceEntity.setUserBison(moreTimeAvailableBison.get());
             moreTimeAvailableBison.get().setAvailable(false);
         }
-    }
-
-    @Override
-    public Optional<ServiceDto> getActiveService(Long bisonId) {
-        return serviceRepository.findFirstByArrivedIsNullAndUserBisonId(bisonId)
-                .map(serviceMapper::mapTo);
     }
 }

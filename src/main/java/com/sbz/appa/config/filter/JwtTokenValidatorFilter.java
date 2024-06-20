@@ -30,7 +30,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
         log.info("Authorization {}", jwt);
         if (jwt != null) {
             try {
-                // Take only jwt token (header = `Bearer jtw`)
+                // Take only jwt token (header = `Bearer jwt`)
                 jwt = jwt.substring(7);
                 SecretKey key = Keys.hmacShaKeyFor(
                         SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));

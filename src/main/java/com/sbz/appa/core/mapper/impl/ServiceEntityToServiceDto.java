@@ -22,6 +22,7 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
     @Override
     public ServiceDto mapTo(ServiceEntity serviceEntity) {
         return ServiceDto.builder()
+                .id(serviceEntity.getId())
                 .userCitizen(serviceEntity.getUserCitizen().getId())
                 .userBison(
                         serviceEntity.getUserBison() == null ? null :
@@ -50,6 +51,7 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
     @Override
     public ServiceEntity mapFrom(ServiceDto serviceDto) {
         return ServiceEntity.builder()
+                .id(serviceDto.getId())
                 .type(ServiceType.valueOf(serviceDto.getType()))
                 .created(getCreatedDateTime(serviceDto))
                 .arrived(serviceDto.getArrived())

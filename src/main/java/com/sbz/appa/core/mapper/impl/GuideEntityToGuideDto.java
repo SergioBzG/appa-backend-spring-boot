@@ -21,7 +21,7 @@ public class GuideEntityToGuideDto implements Mapper<GuideEntity, GuideDto> {
     @Override
     public GuideEntity mapFrom(GuideDto guideDto) {
         return GuideEntity.builder()
-                .id(guideDto.getId() == null ? null : guideDto.getId())
+                .id(guideDto.getId())
                 .currentNation(Nation.valueOf(guideDto.getCurrentNation()))
                 .currentCheckpoint(Checkpoint.valueOf(guideDto.getCurrentCheckpoint()))
                 .build();

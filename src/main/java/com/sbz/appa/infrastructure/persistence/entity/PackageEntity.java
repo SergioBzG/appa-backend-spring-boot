@@ -39,10 +39,6 @@ public class PackageEntity {
     @Range(min = 1, max = 1000)
     private Integer weight;
 
-//    @PrePersist
-//    void preInsert() {
-//        this.serviceId = service.getId();
-//    }
 
     @Override
     public String toString() {

@@ -2,6 +2,7 @@ package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
+import com.sbz.appa.application.utils.Role;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.core.usecase.UserUseCase;
@@ -42,7 +43,7 @@ public class UserUseCaseImpl implements UserUseCase {
         UserEntity savedUser = userRepository.save(userEntity);
 
         // Look for order for the new bison
-        if (savedUser.getRole().getName().equals("ROLE_BISON"))
+        if (savedUser.getRole().getName().equals(Role.ROLE_BISON.name()))
             serviceUseCase.searchForOrder(savedUser);
 
         return userMapper.mapTo(savedUser);
@@ -73,7 +74,7 @@ public class UserUseCaseImpl implements UserUseCase {
                 .orElseThrow(() -> new IllegalStateException("User with this id not found"));
         UserEntity userRequester =  userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
-        if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals("ROLE_ADMIN")) {
+        if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals(Role.ROLE_ADMIN.name())) {
             Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
                     .filter(service -> service.getArrived() == null)
                     .findFirst();
@@ -106,11 +107,11 @@ public class UserUseCaseImpl implements UserUseCase {
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
 
-        Stream<ServiceDto> userServices = Stream.empty();
-        if (userEntity.getRole().getName().equals("ROLE_CITIZEN"))
+        Stream<ServiceDto> userServices;
+        if (userEntity.getRole().getName().equals(Role.ROLE_CITIZEN.name()))
             userServices = userEntity.getCitizenOrders().stream()
                     .map(serviceMapper::mapTo);
-        else if (userEntity.getRole().getName().equals("ROLE_BISON"))
+        else
             userServices = userEntity.getBisonOrders().stream()
                     .map(serviceMapper::mapTo);
 
@@ -125,6 +126,7 @@ public class UserUseCaseImpl implements UserUseCase {
     public ServiceDto getLastService(String email) {
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
+        // TODO : refactoring this query using jpql (consider move it to Service Repository)
         return userEntity.getCitizenOrders().stream()
                 .max(Comparator.comparing(ServiceEntity::getCreated))
                 .map(serviceMapper::mapTo)
