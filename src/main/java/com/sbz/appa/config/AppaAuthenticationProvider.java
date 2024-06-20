@@ -4,6 +4,7 @@ import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 import com.sbz.appa.infrastructure.persistence.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,8 +22,11 @@ import java.util.Optional;
 @Slf4j
 public class AppaAuthenticationProvider implements AuthenticationProvider {
 
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final PasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();

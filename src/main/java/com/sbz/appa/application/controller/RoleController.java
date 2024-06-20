@@ -30,4 +30,12 @@ public class RoleController {
                 .status(HttpStatus.OK)
                 .body(roleUseCase.getRoles());
     }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<Void> deleteRole(@PathVariable("id") Long id) {
+        roleUseCase.deleteRole(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 }

@@ -5,7 +5,6 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class PackageOrder extends Service {
     private static final int BASE_PRICE_SHORT_DISTANCE = 20000;

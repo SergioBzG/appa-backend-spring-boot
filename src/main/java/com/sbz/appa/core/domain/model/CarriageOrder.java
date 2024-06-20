@@ -5,7 +5,6 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class CarriageOrder extends Service {
     private static final int PRICE_KM = 1070;

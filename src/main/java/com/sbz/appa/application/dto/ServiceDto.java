@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ServiceDto {
+    private Long id;
+
     private Long  userCitizen;
 
     private Long  userBison;
