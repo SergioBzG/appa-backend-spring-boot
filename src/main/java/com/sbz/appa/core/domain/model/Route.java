@@ -3,6 +3,7 @@ package com.sbz.appa.core.domain.model;
 import com.sbz.appa.commons.Checkpoint;
 import lombok.*;
 
+import java.util.Deque;
 import java.util.List;
 
 @Setter
@@ -11,5 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Route {
-    private List<Checkpoint> optimalRoute;
+    private Deque<Checkpoint> optimalRoute;
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "optimalRoute=" + optimalRoute +
+                '}';
+    }
 }

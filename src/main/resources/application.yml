@@ -17,5 +17,5 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
     flyway:
         baseline-on-migrate: true
-        schemas: ${DATASOURCE_NAME}
+        schemas: public
         locations: filesystem:db/migration
