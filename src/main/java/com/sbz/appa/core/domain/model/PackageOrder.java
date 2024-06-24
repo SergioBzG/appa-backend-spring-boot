@@ -30,7 +30,7 @@ public class PackageOrder extends ServiceOrder {
     @Override
     public Double getPrice() {
         if (distance == null)
-            getOptimalRouteAndDistance();
+            getShortestDistance();
 
         int dimensionPrice = getVolume() > width ? BASE_PRICE_BIG_VOLUME : BASE_PRICE_SMALL_VOLUME;
         return distance >= SHORT_DISTANCE ?

@@ -119,7 +119,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
     @Override
     public RouteDto getOptimalRoute(PathDto pathDto) {
-        List<String> routeList = ServiceOrder.getRouteList(
+        List<String> routeList = ServiceOrder.getPathList(
                 Checkpoint.valueOf(pathDto.getOriginCheckpoint()),
                 Checkpoint.valueOf(pathDto.getDestinationCheckpoint())
         );

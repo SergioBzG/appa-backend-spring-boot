@@ -18,7 +18,7 @@ public class CarriageOrder extends ServiceOrder {
     @Override
     public Double getPrice() {
         if (distance == null)
-            getOptimalRouteAndDistance();
+            getShortestDistance();
 
         return distance == 0 ? 0.0 : Math.round((distance * PRICE_KM) * 100) / 100d;
     }

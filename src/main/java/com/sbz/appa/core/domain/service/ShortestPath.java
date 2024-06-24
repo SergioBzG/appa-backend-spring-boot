@@ -1,28 +1,30 @@
 package com.sbz.appa.core.domain.service;
 
 import com.sbz.appa.commons.Checkpoint;
+import com.sbz.appa.core.domain.model.DistancePathPair;
 import com.sbz.appa.core.domain.model.Graph;
 import com.sbz.appa.core.domain.model.Neighbor;
-import com.sbz.appa.core.domain.model.Route;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Slf4j
 @Getter
 @NoArgsConstructor
+@Component
 public class ShortestPath {
-    private Double distance;
-    private Route route;
-
 
     // Dijkstra Algorithm
-    public void findShortestPath(Graph graph, Checkpoint initialNode, Checkpoint finalNode) {
+    public static DistancePathPair findShortestPath(Graph graph, Checkpoint initialNode, Checkpoint finalNode, boolean getPath) {
         log.info("Finding shortest path between {} and {}", initialNode, finalNode);
         Map<Checkpoint, Double> shortestPathDistances = new HashMap<>();
+
+        // For backtracking
         Map<Checkpoint, Checkpoint> previousNodes = new HashMap<>();
+
         for(Checkpoint checkpoint : graph.getMap().keySet()) {
             shortestPathDistances.put(checkpoint, Double.MAX_VALUE);
             previousNodes.put(checkpoint, null);
@@ -49,67 +51,32 @@ public class ShortestPath {
                 }
             }
         }
-        distance = shortestPathDistances.get(finalNode);
-        buildPath(previousNodes, initialNode, finalNode);
+        Double distance = shortestPathDistances.get(finalNode);
+        // If only distance is required
+        if (!getPath)
+            return DistancePathPair.builder()
+                    .distance(distance)
+                    .build();
+        // If path is required
+        Deque<Checkpoint> path = buildPath(previousNodes, initialNode, finalNode);
+        if (path.isEmpty()) {
+            log.error("Route not found between {} and {}", initialNode, finalNode);
+            throw new RuntimeException("Route not found between " + initialNode + " and " + finalNode);
+        }
+        return DistancePathPair.builder()
+                .distance(distance)
+                .path(path)
+                .build();
     }
 
-    private void buildPath(
-            Map<Checkpoint, Checkpoint> previousNodes,
-            Checkpoint initialNode,
-            Checkpoint currentNode) {
+    private static Deque<Checkpoint> buildPath(Map<Checkpoint, Checkpoint> previousNodes, Checkpoint initialNode, Checkpoint currentNode) {
         Deque<Checkpoint> path = new ArrayDeque<>();
         while (previousNodes.get(currentNode) != null) {
             path.addFirst(currentNode);
             currentNode = previousNodes.get(currentNode);
         }
         path.addFirst(initialNode);
-        route = Route.builder()
-                .optimalRoute(path)
-                .build();
+        return path;
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
