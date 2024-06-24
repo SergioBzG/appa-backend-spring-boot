@@ -1,10 +1,7 @@
 package com.sbz.appa.application.controller;
 
 
-import com.sbz.appa.application.dto.GuideDto;
-import com.sbz.appa.application.dto.PathDto;
-import com.sbz.appa.application.dto.RouteDto;
-import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.application.dto.*;
 import com.sbz.appa.application.utils.ServicePrice;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import lombok.AllArgsConstructor;
@@ -49,14 +46,14 @@ public class ServiceController {
                 .body(serviceUseCase.getService(id, authentication.getName()));
     }
 
-    @GetMapping(value = "/price")
-    public ResponseEntity<ServicePrice> getPrice(@RequestBody PathDto pathDto) {
+    @PostMapping(value = "/get/price")
+    public ResponseEntity<ServicePrice> getPrice(@RequestBody ServiceOrderDto serviceOrderDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ServicePrice(serviceUseCase.getServicePrice(pathDto)));
+                .body(new ServicePrice(serviceUseCase.getServicePrice(serviceOrderDto)));
     }
 
-    @GetMapping(value = "/route")
+    @PostMapping(value = "/get/route")
     public ResponseEntity<RouteDto> getRoute(@RequestBody PathDto pathDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -64,9 +61,9 @@ public class ServiceController {
     }
 
     @GetMapping(value = "/track/{guideId}")
-    public ResponseEntity<GuideDto> trackService(@PathVariable String guideId) {
+    public ResponseEntity<GuideDto> trackService(@PathVariable String guideId, Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(serviceUseCase.trackService(UUID.fromString(guideId)));
+                .body(serviceUseCase.trackService(UUID.fromString(guideId), authentication.getName()));
     }
 }

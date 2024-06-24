@@ -38,7 +38,7 @@ public class UserUseCaseImpl implements UserUseCase {
     public UserDto saveUser(UserDto userDto) {
         RoleEntity role = roleRepository.findByName(userDto.getRole())
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
-        UserEntity userEntity = userMapper.mapFrom(userDto);
+        UserEntity userEntity = userMapper.mapFromDto(userDto);
         userEntity.setRole(role);
         UserEntity savedUser = userRepository.save(userEntity);
 
@@ -46,7 +46,7 @@ public class UserUseCaseImpl implements UserUseCase {
         if (savedUser.getRole().getName().equals(Role.ROLE_BISON.name()))
             serviceUseCase.searchForOrder(savedUser);
 
-        return userMapper.mapTo(savedUser);
+        return userMapper.mapToDto(savedUser);
     }
 
     @Transactional
@@ -65,7 +65,7 @@ public class UserUseCaseImpl implements UserUseCase {
         savedUser.setEmail(userDto.getEmail());
         savedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         savedUser.setPhone(userDto.getPhone());
-        return userMapper.mapTo(savedUser);
+        return userMapper.mapToDto(savedUser);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public UserDto getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(userMapper::mapTo)
+                .map(userMapper::mapToDto)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
@@ -98,7 +98,7 @@ public class UserUseCaseImpl implements UserUseCase {
         RoleEntity roleEntity = roleRepository.findByName(role)
                 .orElseThrow(() -> new IllegalStateException("Role not found"));
         return roleEntity.getUsers().stream()
-                .map(userMapper::mapTo)
+                .map(userMapper::mapToDto)
                 .toList();
     }
 
@@ -110,10 +110,10 @@ public class UserUseCaseImpl implements UserUseCase {
         Stream<ServiceDto> userServices;
         if (userEntity.getRole().getName().equals(Role.ROLE_CITIZEN.name()))
             userServices = userEntity.getCitizenOrders().stream()
-                    .map(serviceMapper::mapTo);
+                    .map(serviceMapper::mapToDto);
         else
             userServices = userEntity.getBisonOrders().stream()
-                    .map(serviceMapper::mapTo);
+                    .map(serviceMapper::mapToDto);
 
         if (serviceType != null)
             return userServices
@@ -129,7 +129,7 @@ public class UserUseCaseImpl implements UserUseCase {
         // TODO : refactoring this query using jpql (consider move it to Service Repository)
         return userEntity.getCitizenOrders().stream()
                 .max(Comparator.comparing(ServiceEntity::getCreated))
-                .map(serviceMapper::mapTo)
+                .map(serviceMapper::mapToDto)
                 .orElseThrow(() -> new IllegalStateException("User does not have services"));
     }
 

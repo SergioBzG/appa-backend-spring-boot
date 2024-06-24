@@ -52,11 +52,14 @@ public class SecurityConfig {
                             "v1/roles/delete/{id}" // only for testing
                     ).hasRole("ADMIN")
                     .requestMatchers(
-                            "/v1/users/delete/{id}"
+                            "/v1/users/delete/{id}",
+                            "/v1/services/get/route"
                     ).hasAnyRole("ADMIN", "CITIZEN")
                     .requestMatchers(
                             "/v1/services/create",
-                            "/v1/users/get/services/last-service"
+                            "/v1/services/get/price",
+                            "/v1/users/get/services/last-service",
+                            "v1/services/track/{guideId}"
                     ).hasRole("CITIZEN")
                     .requestMatchers(
                             "/v1/services/get/{id}",
