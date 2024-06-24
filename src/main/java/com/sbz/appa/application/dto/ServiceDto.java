@@ -39,7 +39,7 @@ public class ServiceDto {
     @Size(max = 50, message = "origin nation is too long")
     private String originNation;
 
-    @NotBlank(message = "an destination nation is required")
+    @NotBlank(message = "a destination nation is required")
     @Size(max = 50, message = "destination nation is too long")
     private String destinationNation;
 
@@ -47,13 +47,13 @@ public class ServiceDto {
     @Size(max = 50, message = "origin checkpoint is too long")
     private String originCheckpoint;
 
-    @NotBlank(message = "an destination checkpoint is required")
+    @NotBlank(message = "a destination checkpoint is required")
     @Size(max = 50, message = "destination checkpoint is too long")
     private String destinationCheckpoint;
 
-    private CarriageDto carriageEntity;
+    private CarriageDto carriageDto;
 
-    private PackageDto packageEntity;
+    private PackageDto packageDto;
 
     private GuideDto guide;
 }

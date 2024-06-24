@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserEntityToUserDtoMapper implements Mapper<UserEntity, UserDto> {
     @Override
-    public UserDto mapTo(UserEntity userEntity) {
+    public UserDto mapToDto(UserEntity userEntity) {
         return UserDto.builder()
                 .id(userEntity.getId())
                 .role(userEntity.getRole().getName())
@@ -23,7 +23,7 @@ public class UserEntityToUserDtoMapper implements Mapper<UserEntity, UserDto> {
     }
 
     @Override
-    public UserEntity mapFrom(UserDto userDto) {
+    public UserEntity mapFromDto(UserDto userDto) {
         return UserEntity.builder()
                 .id(userDto.getId())
                 .document(userDto.getDocument())

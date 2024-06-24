@@ -1,9 +1,6 @@
 package com.sbz.appa.core.usecase;
 
-import com.sbz.appa.application.dto.GuideDto;
-import com.sbz.appa.application.dto.PathDto;
-import com.sbz.appa.application.dto.RouteDto;
-import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.application.dto.*;
 import com.sbz.appa.infrastructure.persistence.entity.ServiceEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 
@@ -17,15 +14,15 @@ public interface ServiceUseCase {
 
     ServiceDto getService(Long id, String email);
 
-    Double getServicePrice(PathDto pathDto);
+    Double getServicePrice(ServiceOrderDto serviceOrderDto);
 
     RouteDto getOptimalRoute(PathDto pathDto);
 
-    GuideDto trackService(UUID guideId);
+    GuideDto trackService(UUID guideId, String userEmail);
+
+    Optional<ServiceDto> getActiveService(Long bisonId);
 
     void searchForOrder(UserEntity userBison);
 
     void searchForBison(ServiceEntity serviceEntity);
-
-    Optional<ServiceDto> getActiveService(Long bisonId);
 }
