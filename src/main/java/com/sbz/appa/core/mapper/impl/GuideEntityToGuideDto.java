@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GuideEntityToGuideDto implements Mapper<GuideEntity, GuideDto> {
     @Override
-    public GuideDto mapTo(GuideEntity guideEntity) {
+    public GuideDto mapToDto(GuideEntity guideEntity) {
         return GuideDto.builder()
                 .id(guideEntity.getId())
                 .currentNation(guideEntity.getCurrentNation().name())
@@ -19,7 +19,7 @@ public class GuideEntityToGuideDto implements Mapper<GuideEntity, GuideDto> {
     }
 
     @Override
-    public GuideEntity mapFrom(GuideDto guideDto) {
+    public GuideEntity mapFromDto(GuideDto guideDto) {
         return GuideEntity.builder()
                 .id(guideDto.getId())
                 .currentNation(Nation.valueOf(guideDto.getCurrentNation()))

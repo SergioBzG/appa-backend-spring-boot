@@ -1,12 +1,12 @@
 package com.sbz.appa.core.usecase.impl;
 
-import com.sbz.appa.application.dto.GuideDto;
-import com.sbz.appa.application.dto.PathDto;
-import com.sbz.appa.application.dto.RouteDto;
-import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.application.dto.*;
 import com.sbz.appa.application.utils.Role;
+import com.sbz.appa.commons.Checkpoint;
 import com.sbz.appa.commons.ServiceType;
+import com.sbz.appa.core.domain.model.ServiceOrder;
 import com.sbz.appa.core.mapper.Mapper;
+import com.sbz.appa.core.mapper.ServiceOrderDtoToServiceOrder;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.*;
 import com.sbz.appa.infrastructure.persistence.repository.*;
@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     private final UserRepository userRepository;
     private final Mapper<ServiceEntity, ServiceDto> serviceMapper;
     private final Mapper<GuideEntity, GuideDto> guideMapper;
+    private final ServiceOrderDtoToServiceOrder serviceOrderDtoToServiceOrder;
 
     @Override
     public ServiceDto saveService(ServiceDto serviceDto, String email) {
@@ -40,7 +42,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
                 .currentCheckpoint(serviceDto.getOriginCheckpoint())
                 .build()
         );
-        ServiceEntity serviceEntity = serviceMapper.mapFrom(serviceDto);
+        ServiceEntity serviceEntity = serviceMapper.mapFromDto(serviceDto);
         // Set userCitizen
         serviceEntity.setUserCitizen(userCitizen);
 
@@ -55,7 +57,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
             serviceEntity.getCarriageEntity().setService(serviceEntity); // Persist
         serviceEntity.getGuide().setService(serviceEntity); // Persist
 
-        return serviceMapper.mapTo(serviceRepository.save(serviceEntity));
+        return serviceMapper.mapToDto(serviceRepository.save(serviceEntity));
     }
 
     @Transactional
@@ -65,7 +67,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         ServiceEntity serviceEntity = serviceRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Service not found"));
 
-        GuideEntity newLocationEntity = guideMapper.mapFrom(newLocation);
+        GuideEntity newLocationEntity = guideMapper.mapFromDto(newLocation);
         // Update service guide
         serviceEntity.getGuide().setCurrentNation(newLocationEntity.getCurrentNation());
         serviceEntity.getGuide().setCurrentCheckpoint(newLocationEntity.getCurrentCheckpoint());
@@ -89,7 +91,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
             searchForOrder(bison);
         }
 
-        return serviceMapper.mapTo(serviceEntity);
+        return serviceMapper.mapToDto(serviceEntity);
     }
 
     @Override
@@ -106,28 +108,41 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
                 && !serviceEntity.getUserCitizen().getEmail().equals(email))
             throw new IllegalStateException("You do not have a service assigned with this id");
 
-        return serviceMapper.mapTo(serviceEntity);
+        return serviceMapper.mapToDto(serviceEntity);
     }
 
     @Override
-    public Double getServicePrice(PathDto pathDto) {
-        return 0.0;
+    public Double getServicePrice(ServiceOrderDto serviceOrderDto) {
+        ServiceOrder serviceOrder = serviceOrderDtoToServiceOrder.mapFromDto(serviceOrderDto);
+        return serviceOrder.getPrice();
     }
 
     @Override
     public RouteDto getOptimalRoute(PathDto pathDto) {
-        return null;
+        List<String> routeList = ServiceOrder.getRouteList(
+                Checkpoint.valueOf(pathDto.getOriginCheckpoint()),
+                Checkpoint.valueOf(pathDto.getDestinationCheckpoint())
+        );
+        return RouteDto.builder()
+                .optimalRoute(routeList)
+                .build();
     }
 
     @Override
-    public GuideDto trackService(UUID guideId) {
-        return null;
+    public GuideDto trackService(UUID guideId, String userEmail) {
+        ServiceEntity service = serviceRepository.findByGuideId(guideId)
+                .orElseThrow(() -> new IllegalStateException("Service not found"));
+        if (!service.getUserCitizen().getEmail().equals(userEmail))
+            throw new IllegalStateException("You do not have a service assigned with this id");
+
+        return guideMapper.mapToDto(service.getGuide());
+
     }
 
     @Override
     public Optional<ServiceDto> getActiveService(Long bisonId) {
         return serviceRepository.findFirstByArrivedIsNullAndUserBisonId(bisonId)
-                .map(serviceMapper::mapTo);
+                .map(serviceMapper::mapToDto);
     }
 
     @Transactional

@@ -14,12 +14,12 @@ public class RoleEntityToRoleDto implements Mapper<RoleEntity, RoleDto> {
     private final ModelMapper modelMapper;
 
     @Override
-    public RoleDto mapTo(RoleEntity roleEntity) {
+    public RoleDto mapToDto(RoleEntity roleEntity) {
         return modelMapper.map(roleEntity, RoleDto.class);
     }
 
     @Override
-    public RoleEntity mapFrom(RoleDto roleDto) {
+    public RoleEntity mapFromDto(RoleDto roleDto) {
         return modelMapper.map(roleDto, RoleEntity.class);
     }
 }

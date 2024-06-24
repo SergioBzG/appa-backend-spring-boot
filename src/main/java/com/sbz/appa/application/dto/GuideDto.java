@@ -16,11 +16,11 @@ import java.util.UUID;
 public class GuideDto {
     private UUID id;
 
-    @NotBlank(message = "an current nation is required")
+    @NotBlank(message = "a current nation is required")
     @Size(max = 50, message = "current nation is too long")
     private String currentNation;
 
-    @NotBlank(message = "an current checkpoint is required")
+    @NotBlank(message = "a current checkpoint is required")
     @Size(max = 50, message = "current checkpoint is too long")
     private String currentCheckpoint;
 }

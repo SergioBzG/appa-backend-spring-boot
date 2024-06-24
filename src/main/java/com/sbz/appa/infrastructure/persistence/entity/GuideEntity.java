@@ -29,12 +29,12 @@ public class GuideEntity {
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "an current nation is required")
+    @NotNull(message = "a current nation is required")
     private Nation currentNation;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "an current checkpoint is required")
+    @NotNull(message = "a current checkpoint is required")
     private Checkpoint currentCheckpoint;
 
     @Override

@@ -55,7 +55,7 @@ public class ServiceEntity {
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "an destination nation is required")
+    @NotNull(message = "a destination nation is required")
     private Nation destinationNation;
 
     @Column(length = 50)
@@ -65,7 +65,7 @@ public class ServiceEntity {
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "an destination checkpoint is required")
+    @NotNull(message = "a destination checkpoint is required")
     private Checkpoint destinationCheckpoint;
 
     @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)

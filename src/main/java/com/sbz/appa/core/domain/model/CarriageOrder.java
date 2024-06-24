@@ -1,16 +1,25 @@
 package com.sbz.appa.core.domain.model;
 
+import com.sbz.appa.commons.Checkpoint;
+import com.sbz.appa.commons.ServiceType;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@Builder
-public class CarriageOrder extends Service {
+@Slf4j
+public class CarriageOrder extends ServiceOrder {
     private static final int PRICE_KM = 1070;
 
+    public CarriageOrder(ServiceType type, Checkpoint originCheckpoint, Checkpoint destinationCheckpoint) {
+        super(type, originCheckpoint, destinationCheckpoint);
+    }
+
     @Override
-    public Double getPrice(double distance) {
+    public Double getPrice() {
+        if (distance == null)
+            getOptimalRouteAndDistance();
+
         return distance == 0 ? 0.0 : Math.round((distance * PRICE_KM) * 100) / 100d;
     }
 }

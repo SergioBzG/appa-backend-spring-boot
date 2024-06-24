@@ -23,15 +23,15 @@ public class RoleUseCaseImpl implements RoleUseCase {
                 .ifPresent(role -> {
                     throw new IllegalStateException("Role already exists");
                 });
-        return roleMapper.mapTo(
-                roleRepository.save(roleMapper.mapFrom(roleDto))
+        return roleMapper.mapToDto(
+                roleRepository.save(roleMapper.mapFromDto(roleDto))
         );
     }
 
     @Override
     public List<RoleDto> getRoles() {
         return roleRepository.findAll().stream()
-                .map(roleMapper::mapTo)
+                .map(roleMapper::mapToDto)
                 .toList();
     }
 

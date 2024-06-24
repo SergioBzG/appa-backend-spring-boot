@@ -2,6 +2,7 @@ package com.sbz.appa.core.domain.model;
 
 import com.sbz.appa.commons.Checkpoint;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class Graph {
     }
 
     private Map<Checkpoint, List<Neighbor>> buildMap() {
-        Map<Checkpoint, List<Neighbor>> map = new java.util.HashMap<>(Map.of(
+        Map<Checkpoint, List<Neighbor>> map = new HashMap<>(Map.of(
                 Checkpoint.FIRE_CAPITAL, List.of(
                         new Neighbor(Checkpoint.WESTERN_AIR, 213.6937),
                         new Neighbor(Checkpoint.SHU_JING, 266.5276),
@@ -23,8 +24,7 @@ public class Graph {
                 ),
                 Checkpoint.WESTERN_AIR, List.of(
                         new Neighbor(Checkpoint.FIRE_CAPITAL, 213.6937),
-                        new Neighbor(Checkpoint.SHU_JING, 165.7588),
-                        new Neighbor(Checkpoint.ABBEY, 145.3444)
+                        new Neighbor(Checkpoint.SHU_JING, 165.7588)
                 ),
                 Checkpoint.ABBEY, List.of(
                         new Neighbor(Checkpoint.NORTHERN_AIR, 195d),
@@ -95,5 +95,4 @@ public class Graph {
     public Map<Checkpoint, List<Neighbor>> getMap() {
         return map;
     }
-
 }

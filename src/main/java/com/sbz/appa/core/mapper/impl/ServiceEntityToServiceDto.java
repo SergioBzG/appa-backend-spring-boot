@@ -20,7 +20,7 @@ import java.time.ZoneId;
 @Component
 public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceDto> {
     @Override
-    public ServiceDto mapTo(ServiceEntity serviceEntity) {
+    public ServiceDto mapToDto(ServiceEntity serviceEntity) {
         return ServiceDto.builder()
                 .id(serviceEntity.getId())
                 .userCitizen(serviceEntity.getUserCitizen().getId())
@@ -36,8 +36,8 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
                 .destinationNation(serviceEntity.getDestinationNation().name())
                 .originCheckpoint(serviceEntity.getOriginCheckpoint().name())
                 .destinationCheckpoint(serviceEntity.getDestinationCheckpoint().name())
-                .carriageEntity(getCarriageDto(serviceEntity))
-                .packageEntity(getPackageDto(serviceEntity))
+                .carriageDto(getCarriageDto(serviceEntity))
+                .packageDto(getPackageDto(serviceEntity))
                 .guide(
                         GuideDto.builder()
                                 .id(serviceEntity.getGuide().getId())
@@ -49,7 +49,7 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
     }
 
     @Override
-    public ServiceEntity mapFrom(ServiceDto serviceDto) {
+    public ServiceEntity mapFromDto(ServiceDto serviceDto) {
         return ServiceEntity.builder()
                 .id(serviceDto.getId())
                 .type(ServiceType.valueOf(serviceDto.getType()))
@@ -91,20 +91,20 @@ public class ServiceEntityToServiceDto implements Mapper<ServiceEntity, ServiceD
     }
 
     private PackageEntity getPackageEntity(ServiceDto serviceDto) {
-        return serviceDto.getPackageEntity() == null ? null :
+        return serviceDto.getPackageDto() == null ? null :
                 PackageEntity.builder()
-                        .length(serviceDto.getPackageEntity().getLength())
-                        .width(serviceDto.getPackageEntity().getWidth())
-                        .height(serviceDto.getPackageEntity().getHeight())
-                        .weight(serviceDto.getPackageEntity().getWeight())
+                        .length(serviceDto.getPackageDto().getLength())
+                        .width(serviceDto.getPackageDto().getWidth())
+                        .height(serviceDto.getPackageDto().getHeight())
+                        .weight(serviceDto.getPackageDto().getWeight())
                         .build();
     }
 
     private CarriageEntity getCarriageEntity(ServiceDto serviceDto) {
-        return serviceDto.getCarriageEntity() == null ? null :
+        return serviceDto.getCarriageDto() == null ? null :
                 CarriageEntity.builder()
-                        .pickUp(serviceDto.getCarriageEntity().getPickUp())
-                        .description(serviceDto.getCarriageEntity().getDescription())
+                        .pickUp(serviceDto.getCarriageDto().getPickUp())
+                        .description(serviceDto.getCarriageDto().getDescription())
                         .build();
     }
 

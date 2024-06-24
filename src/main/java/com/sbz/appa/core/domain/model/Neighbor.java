@@ -2,12 +2,10 @@ package com.sbz.appa.core.domain.model;
 
 import com.sbz.appa.commons.Checkpoint;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 public class Neighbor implements Comparable<Neighbor> {
     private Checkpoint neighborCheckpoint;
@@ -16,13 +14,5 @@ public class Neighbor implements Comparable<Neighbor> {
     @Override
     public int compareTo(Neighbor neighbor) {
         return Double.compare(distance, neighbor.getDistance());
-    }
-
-    @Override
-    public String toString() {
-        return "Neighbor{" +
-                "neighborCheckpoint=" + neighborCheckpoint +
-                ", distance=" + distance +
-                '}';
     }
 }

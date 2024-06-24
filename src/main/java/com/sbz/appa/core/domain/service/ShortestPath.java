@@ -5,20 +5,22 @@ import com.sbz.appa.core.domain.model.Graph;
 import com.sbz.appa.core.domain.model.Neighbor;
 import com.sbz.appa.core.domain.model.Route;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 @Slf4j
-@Setter
 @Getter
+@NoArgsConstructor
 public class ShortestPath {
-    private static Double distance;
-    private static Route optimalRoute;
+    private Double distance;
+    private Route route;
+
 
     // Dijkstra Algorithm
-    public static void findShortestPath(Graph graph, Checkpoint initialNode, Checkpoint finalNode) {
+    public void findShortestPath(Graph graph, Checkpoint initialNode, Checkpoint finalNode) {
+        log.info("Finding shortest path between {} and {}", initialNode, finalNode);
         Map<Checkpoint, Double> shortestPathDistances = new HashMap<>();
         Map<Checkpoint, Checkpoint> previousNodes = new HashMap<>();
         for(Checkpoint checkpoint : graph.getMap().keySet()) {
@@ -51,7 +53,7 @@ public class ShortestPath {
         buildPath(previousNodes, initialNode, finalNode);
     }
 
-    private static void buildPath(
+    private void buildPath(
             Map<Checkpoint, Checkpoint> previousNodes,
             Checkpoint initialNode,
             Checkpoint currentNode) {
@@ -61,16 +63,11 @@ public class ShortestPath {
             currentNode = previousNodes.get(currentNode);
         }
         path.addFirst(initialNode);
-        optimalRoute = Route.builder()
+        route = Route.builder()
                 .optimalRoute(path)
                 .build();
     }
 
-    public static void main(String[] args) {
-        findShortestPath(Graph.getInstance(), Checkpoint.FIRE_CAPITAL, Checkpoint.SHU_JING);
-        log.info("Shortest distance {}", ShortestPath.distance);
-        log.info("Shortest path {}", ShortestPath.optimalRoute);
-    }
 }
 
 
