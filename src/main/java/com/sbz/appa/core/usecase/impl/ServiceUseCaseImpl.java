@@ -1,7 +1,7 @@
 package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.*;
-import com.sbz.appa.application.utils.Role;
+import com.sbz.appa.commons.Role;
 import com.sbz.appa.commons.Checkpoint;
 import com.sbz.appa.commons.ServiceType;
 import com.sbz.appa.core.domain.model.ServiceOrder;
@@ -156,6 +156,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
                 });
     }
 
+    @Transactional
     @Override
     public void searchForBison(ServiceEntity serviceEntity) {
         // First, look for a bison who has never had a service

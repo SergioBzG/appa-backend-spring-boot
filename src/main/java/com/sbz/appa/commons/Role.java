@@ -1,4 +1,4 @@
-package com.sbz.appa.application.utils;
+package com.sbz.appa.commons;
 
 public enum Role {
     ROLE_ADMIN,

@@ -42,7 +42,8 @@ public class SecurityConfig {
                             "/v1/users/register/citizen"
                     ).permitAll()
                     .requestMatchers(
-                            "/v1/users/login", "/v1/users/update"
+                            "/v1/users/login",
+                            "/v1/users/update"
                     ).authenticated()
                     .requestMatchers(
                             "/v1/roles/create",
@@ -52,8 +53,7 @@ public class SecurityConfig {
                             "v1/roles/delete/{id}" // only for testing
                     ).hasRole("ADMIN")
                     .requestMatchers(
-                            "/v1/users/delete/{id}",
-                            "/v1/services/get/route"
+                            "/v1/users/delete/{id}"
                     ).hasAnyRole("ADMIN", "CITIZEN")
                     .requestMatchers(
                             "/v1/services/create",
@@ -63,7 +63,8 @@ public class SecurityConfig {
                     ).hasRole("CITIZEN")
                     .requestMatchers(
                             "/v1/services/get/{id}",
-                            "/v1/users/get/services"
+                            "/v1/users/get/services",
+                            "/v1/services/get/route"
                     ).hasAnyRole("CITIZEN", "BISON")
                     .requestMatchers(
                             "/v1/services/update/{id}",

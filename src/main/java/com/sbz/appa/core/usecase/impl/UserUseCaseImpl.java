@@ -2,7 +2,7 @@ package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
-import com.sbz.appa.application.utils.Role;
+import com.sbz.appa.commons.Role;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import com.sbz.appa.core.usecase.UserUseCase;
@@ -75,6 +75,8 @@ public class UserUseCaseImpl implements UserUseCase {
         UserEntity userRequester =  userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals(Role.ROLE_ADMIN.name())) {
+            if (!userToDelete.getRole().getName().equals(Role.ROLE_BISON.name()))
+                throw new IllegalStateException("Incorrect user id");
             Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
                     .filter(service -> service.getArrived() == null)
                     .findFirst();
@@ -116,9 +118,8 @@ public class UserUseCaseImpl implements UserUseCase {
                     .map(serviceMapper::mapToDto);
 
         if (serviceType != null)
-            return userServices
-                    .filter(service -> service.getType().equalsIgnoreCase(serviceType))
-                    .toList();
+            userServices = userServices
+                    .filter(service -> service.getType().equalsIgnoreCase(serviceType));
         return userServices.toList();
     }
 
@@ -126,7 +127,6 @@ public class UserUseCaseImpl implements UserUseCase {
     public ServiceDto getLastService(String email) {
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
-        // TODO : refactoring this query using jpql (consider move it to Service Repository)
         return userEntity.getCitizenOrders().stream()
                 .max(Comparator.comparing(ServiceEntity::getCreated))
                 .map(serviceMapper::mapToDto)

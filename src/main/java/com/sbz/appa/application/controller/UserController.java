@@ -2,7 +2,7 @@ package com.sbz.appa.application.controller;
 
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
-import com.sbz.appa.application.utils.Role;
+import com.sbz.appa.commons.Role;
 import com.sbz.appa.core.usecase.UserUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class UserController {
     @PostMapping(value = "/register/citizen")
     public ResponseEntity<UserDto> registerCitizen(@RequestBody UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.ROLE_BISON.name());
+        user.setRole(Role.ROLE_CITIZEN.name());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userUseCase.saveUser(user));

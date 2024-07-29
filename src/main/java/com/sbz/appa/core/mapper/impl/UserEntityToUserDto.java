@@ -6,7 +6,7 @@ import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserEntityToUserDtoMapper implements Mapper<UserEntity, UserDto> {
+public class UserEntityToUserDto implements Mapper<UserEntity, UserDto> {
     @Override
     public UserDto mapToDto(UserEntity userEntity) {
         return UserDto.builder()
