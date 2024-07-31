@@ -13,13 +13,21 @@ public class StaffValidator implements Validator<UserDto>  {
     public boolean validate(UserDto user) {
       if (hasRole(user) && user.getRole().equals(Role.ROLE_ADMIN.name()))
           return true;
-      return hasRole(user) && hasPhone(user) && hasVehicle(user);
+      else if (!user.getRole().equals(Role.ROLE_BISON.name()))
+          throw new InvalidOrMissingDataException("user", "role");
+      return hasPhone(user) && hasVehicle(user) && hasDocument(user);
     }
 
     private boolean hasRole(UserDto user) {
         if (user.getRole() != null)
             return true;
         throw new InvalidOrMissingDataException("user", "role");
+    }
+
+    private boolean hasDocument(UserDto user) {
+        if (user.getDocument() != null)
+            return true;
+        throw new InvalidOrMissingDataException("user", "document");
     }
 
     private boolean hasPhone(UserDto user) {

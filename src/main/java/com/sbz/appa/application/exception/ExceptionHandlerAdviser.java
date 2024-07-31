@@ -1,6 +1,5 @@
 package com.sbz.appa.application.exception;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,6 +45,36 @@ public class ExceptionHandlerAdviser {
                 exception.getMessage()
         );
         problemDetail.setTitle("invalid or missing data");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail onNotFoundException(NotFoundException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage()
+        );
+        problemDetail.setTitle("resource not found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ProblemDetail onAlreadyExistsException(AlreadyExistsException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                exception.getMessage()
+        );
+        problemDetail.setTitle("resource already exists");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ActionNotAllowedException.class)
+    public ProblemDetail onActionNotAllowedException(ActionNotAllowedException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.FORBIDDEN,
+                exception.getMessage()
+        );
+        problemDetail.setTitle("action not allowed");
         return problemDetail;
     }
 

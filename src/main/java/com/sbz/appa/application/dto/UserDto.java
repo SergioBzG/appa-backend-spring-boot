@@ -21,7 +21,7 @@ public class UserDto {
     private String role;
 
     @Size(max = 50, message = "document is too long")
-    @Pattern(regexp = "^(CC|CE|P)-\\d{3,17}$", message = "invalid document format")
+    @Pattern(regexp = "^(CC|CE|P)-\\d{3,17}$", message = "invalid document format e.g. CC|CE|P-12345")
     private String document;
 
     @NotBlank(message = "a name is required")
