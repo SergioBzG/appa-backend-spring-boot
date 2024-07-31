@@ -73,13 +73,13 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         serviceEntity.getGuide().setCurrentCheckpoint(newLocationEntity.getCurrentCheckpoint());
 
         if (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email))
-            throw new IllegalStateException("You do not have a service assigned with this id");
+            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
         else if (serviceEntity.getArrived() != null)
-            throw new IllegalStateException("Service has already arrived to its destination");
+            throw new IllegalStateException("Service has already arrived to its destination"); // 409
         else  if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
             // Package or Carriage has arrived to its destination
             if (serviceEntity.getType() == ServiceType.CARRIAGE && price == null)
-                throw new IllegalStateException("Price is required for carriage service");
+                throw new IllegalStateException("Price is required for carriage service"); // 400
             else if (serviceEntity.getType() == ServiceType.CARRIAGE)
                 serviceEntity.setPrice(price);
 
@@ -103,10 +103,10 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
 
         if (user.getRole().getName().equals(Role.ROLE_BISON.name())
                 && (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email)))
-            throw new IllegalStateException("You do not have a service assigned with this id");
+            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
         else if (user.getRole().getName().equals(Role.ROLE_CITIZEN.name())
                 && !serviceEntity.getUserCitizen().getEmail().equals(email))
-            throw new IllegalStateException("You do not have a service assigned with this id");
+            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
 
         return serviceMapper.mapToDto(serviceEntity);
     }
@@ -133,7 +133,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         ServiceEntity service = serviceRepository.findByGuideId(guideId)
                 .orElseThrow(() -> new IllegalStateException("Service not found"));
         if (!service.getUserCitizen().getEmail().equals(userEmail))
-            throw new IllegalStateException("You do not have a service assigned with this id");
+            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
 
         return guideMapper.mapToDto(service.getGuide());
 

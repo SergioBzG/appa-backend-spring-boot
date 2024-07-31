@@ -76,13 +76,13 @@ public class UserUseCaseImpl implements UserUseCase {
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals(Role.ROLE_ADMIN.name())) {
             if (!userToDelete.getRole().getName().equals(Role.ROLE_BISON.name()))
-                throw new IllegalStateException("Incorrect user id");
+                throw new IllegalStateException("Incorrect user id"); // 403
             Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
                     .filter(service -> service.getArrived() == null)
                     .findFirst();
             serviceToDeliver.ifPresent(serviceUseCase::searchForBison);
         } else if (!userToDelete.equals(userRequester))
-            throw new IllegalStateException("Incorrect user id");
+            throw new IllegalStateException("Incorrect user id"); // 403
         // Delete user
         userRepository.deleteById(id);
     }
@@ -130,7 +130,7 @@ public class UserUseCaseImpl implements UserUseCase {
         return userEntity.getCitizenOrders().stream()
                 .max(Comparator.comparing(ServiceEntity::getCreated))
                 .map(serviceMapper::mapToDto)
-                .orElseThrow(() -> new IllegalStateException("User does not have services"));
+                .orElseThrow(() -> new IllegalStateException("User does not have services")); // 404
     }
 
     @Override

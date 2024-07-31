@@ -2,7 +2,7 @@ package com.sbz.appa.application.controller;
 
 
 import com.sbz.appa.application.dto.*;
-import com.sbz.appa.application.utils.ServicePrice;
+import com.sbz.appa.application.util.ServicePrice;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
