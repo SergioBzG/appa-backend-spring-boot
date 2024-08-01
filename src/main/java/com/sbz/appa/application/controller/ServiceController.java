@@ -4,6 +4,7 @@ package com.sbz.appa.application.controller;
 import com.sbz.appa.application.dto.*;
 import com.sbz.appa.application.util.ServicePrice;
 import com.sbz.appa.core.usecase.ServiceUseCase;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,9 @@ public class ServiceController {
     private final ServiceUseCase serviceUseCase;
 
     @PostMapping(value = "/create")
-    public ResponseEntity<ServiceDto> createService(@RequestBody ServiceDto serviceDto, Authentication authentication) {
+    public ResponseEntity<ServiceDto> createService(
+            @RequestBody @Valid ServiceDto serviceDto,
+            Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(serviceUseCase.saveService(serviceDto, authentication.getName()));
@@ -31,7 +34,7 @@ public class ServiceController {
     @PatchMapping(value = "/update/{id}")
     public ResponseEntity<ServiceDto> updateService(
             @PathVariable("id") Long id,
-            @RequestBody GuideDto newLocation,
+            @RequestBody @Valid GuideDto newLocation,
             @RequestParam(required = false) Double price,
             Authentication authentication) {
         return ResponseEntity
@@ -54,7 +57,7 @@ public class ServiceController {
     }
 
     @PostMapping(value = "/get/route")
-    public ResponseEntity<RouteDto> getRoute(@RequestBody PathDto pathDto) {
+    public ResponseEntity<RouteDto> getRoute(@RequestBody @Valid PathDto pathDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(serviceUseCase.getOptimalRoute(pathDto));
