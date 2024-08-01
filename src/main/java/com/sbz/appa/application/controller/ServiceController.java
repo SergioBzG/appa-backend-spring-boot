@@ -3,6 +3,7 @@ package com.sbz.appa.application.controller;
 
 import com.sbz.appa.application.dto.*;
 import com.sbz.appa.application.util.ServicePrice;
+import com.sbz.appa.application.validator.Validator;
 import com.sbz.appa.core.usecase.ServiceUseCase;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class ServiceController {
 
     private final ServiceUseCase serviceUseCase;
+    private final Validator<ServiceOrderDto> serviceOrderDtoValidator;
 
     @PostMapping(value = "/create")
     public ResponseEntity<ServiceDto> createService(
@@ -50,7 +52,8 @@ public class ServiceController {
     }
 
     @PostMapping(value = "/get/price")
-    public ResponseEntity<ServicePrice> getPrice(@RequestBody ServiceOrderDto serviceOrderDto) {
+    public ResponseEntity<ServicePrice> getPrice(@RequestBody @Valid ServiceOrderDto serviceOrderDto) {
+        serviceOrderDtoValidator.validate(serviceOrderDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ServicePrice(serviceUseCase.getServicePrice(serviceOrderDto)));

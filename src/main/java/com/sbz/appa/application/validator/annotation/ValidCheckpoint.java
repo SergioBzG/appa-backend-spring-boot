@@ -1,7 +1,6 @@
 package com.sbz.appa.application.validator.annotation;
 
 import com.sbz.appa.application.validator.annotation.impl.CheckpointValidator;
-import com.sbz.appa.application.validator.annotation.impl.NationValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
