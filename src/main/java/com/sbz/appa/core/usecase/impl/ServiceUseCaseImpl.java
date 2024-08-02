@@ -1,6 +1,9 @@
 package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.*;
+import com.sbz.appa.application.exception.ActionNotAllowedException;
+import com.sbz.appa.application.exception.InvalidOrMissingDataException;
+import com.sbz.appa.application.exception.NotFoundException;
 import com.sbz.appa.commons.Role;
 import com.sbz.appa.commons.Checkpoint;
 import com.sbz.appa.commons.ServiceType;
@@ -35,7 +38,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     public ServiceDto saveService(ServiceDto serviceDto, String email) {
         log.info("Service dto {}", serviceDto);
         UserEntity userCitizen = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Citizen not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
         // Set guide
         serviceDto.setGuide(GuideDto.builder()
                 .currentNation(serviceDto.getOriginNation())
@@ -63,9 +66,8 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     @Transactional
     @Override
     public ServiceDto updateService(Long id, GuideDto newLocation, String email, Double price) {
-        log.info("Service id {}", id);
         ServiceEntity serviceEntity = serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Service not found"));
+                .orElseThrow(() -> new NotFoundException("service"));
 
         GuideEntity newLocationEntity = guideMapper.mapFromDto(newLocation);
         // Update service guide
@@ -73,13 +75,13 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
         serviceEntity.getGuide().setCurrentCheckpoint(newLocationEntity.getCurrentCheckpoint());
 
         if (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email))
-            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
+            throw new NotFoundException("service");
         else if (serviceEntity.getArrived() != null)
-            throw new IllegalStateException("Service has already arrived to its destination"); // 409
+            throw new ActionNotAllowedException("service", "updating");
         else  if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
             // Package or Carriage has arrived to its destination
             if (serviceEntity.getType() == ServiceType.CARRIAGE && price == null)
-                throw new IllegalStateException("Price is required for carriage service"); // 400
+                throw new InvalidOrMissingDataException("carriage", "price");
             else if (serviceEntity.getType() == ServiceType.CARRIAGE)
                 serviceEntity.setPrice(price);
 
@@ -97,16 +99,16 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     @Override
     public ServiceDto getService(Long id, String email) {
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
         ServiceEntity serviceEntity = serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Service not found"));
+                .orElseThrow(() -> new NotFoundException("service"));
 
         if (user.getRole().getName().equals(Role.ROLE_BISON.name())
                 && (serviceEntity.getUserBison() == null || !serviceEntity.getUserBison().getEmail().equals(email)))
-            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
+            throw new NotFoundException("service");
         else if (user.getRole().getName().equals(Role.ROLE_CITIZEN.name())
                 && !serviceEntity.getUserCitizen().getEmail().equals(email))
-            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
+            throw new NotFoundException("service");
 
         return serviceMapper.mapToDto(serviceEntity);
     }
@@ -131,9 +133,9 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
     @Override
     public GuideDto trackService(UUID guideId, String userEmail) {
         ServiceEntity service = serviceRepository.findByGuideId(guideId)
-                .orElseThrow(() -> new IllegalStateException("Service not found"));
+                .orElseThrow(() -> new NotFoundException("service"));
         if (!service.getUserCitizen().getEmail().equals(userEmail))
-            throw new IllegalStateException("You do not have a service assigned with this id"); // 404
+            throw new NotFoundException("service");
 
         return guideMapper.mapToDto(service.getGuide());
 
