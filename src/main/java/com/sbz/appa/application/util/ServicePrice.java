@@ -1,11 +1,9 @@
-package com.sbz.appa.application.utils;
+package com.sbz.appa.application.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class ServicePrice {
     private Double price;

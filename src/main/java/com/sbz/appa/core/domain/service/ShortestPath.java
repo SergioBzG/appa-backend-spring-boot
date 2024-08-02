@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Slf4j
-@Getter
-@NoArgsConstructor
+//@Getter
+//@NoArgsConstructor // ??? Why is this required?
 @Component
 public class ShortestPath {
 

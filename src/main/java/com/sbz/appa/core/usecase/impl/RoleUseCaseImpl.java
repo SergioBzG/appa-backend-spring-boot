@@ -1,6 +1,7 @@
 package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.RoleDto;
+import com.sbz.appa.application.exception.AlreadyExistsException;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.RoleUseCase;
 import com.sbz.appa.infrastructure.persistence.entity.RoleEntity;
@@ -21,7 +22,7 @@ public class RoleUseCaseImpl implements RoleUseCase {
     public RoleDto saveRole(RoleDto roleDto) {
         roleRepository.findByName(roleDto.getName())
                 .ifPresent(role -> {
-                    throw new IllegalStateException("Role already exists");
+                    throw new AlreadyExistsException("role", "name");
                 });
         return roleMapper.mapToDto(
                 roleRepository.save(roleMapper.mapFromDto(roleDto))
@@ -33,10 +34,5 @@ public class RoleUseCaseImpl implements RoleUseCase {
         return roleRepository.findAll().stream()
                 .map(roleMapper::mapToDto)
                 .toList();
-    }
-
-    @Override
-    public void deleteRole(Long id) {
-        roleRepository.deleteById(id);
     }
 }

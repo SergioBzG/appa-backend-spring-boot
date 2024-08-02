@@ -2,10 +2,11 @@ package com.sbz.appa.application.controller;
 
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
-import com.sbz.appa.application.utils.Role;
+import com.sbz.appa.application.validator.Validator;
+import com.sbz.appa.commons.Role;
 import com.sbz.appa.core.usecase.UserUseCase;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,23 +21,21 @@ public class UserController {
 
     private final UserUseCase userUseCase;
     private final PasswordEncoder passwordEncoder;
+    private final Validator<UserDto> staffValidator;
 
     @PostMapping(value = "/register/citizen")
-    public ResponseEntity<UserDto> registerCitizen(@RequestBody UserDto user) {
+    public ResponseEntity<UserDto> registerCitizen(@RequestBody @Valid UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.ROLE_BISON.name());
+        user.setRole(Role.ROLE_CITIZEN.name());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userUseCase.saveUser(user));
     }
 
     @PostMapping(value = "/register/staff")
-    public ResponseEntity<UserDto> registerStaff(@RequestBody UserDto user) {
+    public ResponseEntity<UserDto> registerStaff(@RequestBody @Valid UserDto user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Validate user role
-        if (!(user.getRole().equals(Role.ROLE_BISON.name()) || user.getRole().equals(Role.ROLE_ADMIN.name())))
-            throw new IllegalArgumentException("Invalid role");
-
+        staffValidator.validate(user);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userUseCase.saveUser(user));
@@ -50,7 +49,9 @@ public class UserController {
     }
 
     @PatchMapping(value = "/update")
-    public ResponseEntity<UserDto> updatedUser(@RequestBody UserDto user, Authentication authentication) {
+    public ResponseEntity<UserDto> updatedUser(
+            @RequestBody @Valid UserDto user,
+            Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userUseCase.updateUser(user, authentication.getName()));
@@ -72,7 +73,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/get/services")
-    public ResponseEntity<List<ServiceDto>> getUserServices(@RequestParam(value = "type", required = false) String serviceType, Authentication authentication) {
+    public ResponseEntity<List<ServiceDto>> getUserServices(
+            @RequestParam(value = "type", required = false) String serviceType,
+            Authentication authentication) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userUseCase.getUserServices(authentication.getName(), serviceType));
