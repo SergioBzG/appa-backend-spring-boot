@@ -3,6 +3,7 @@ package com.sbz.appa.application.controller;
 
 import com.sbz.appa.application.dto.RoleDto;
 import com.sbz.appa.core.usecase.RoleUseCase;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class RoleController {
     private final RoleUseCase roleUseCase;
 
     @PostMapping(value = "/create")
-    public ResponseEntity<RoleDto> createRole(@RequestBody RoleDto role) {
+    public ResponseEntity<RoleDto> createRole(@RequestBody @Valid RoleDto role) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(roleUseCase.saveRole(role));
@@ -31,11 +32,4 @@ public class RoleController {
                 .body(roleUseCase.getRoles());
     }
 
-    @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Void> deleteRole(@PathVariable("id") Long id) {
-        roleUseCase.deleteRole(id);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
-    }
 }

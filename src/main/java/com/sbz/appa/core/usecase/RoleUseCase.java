@@ -8,6 +8,4 @@ public interface RoleUseCase {
     RoleDto saveRole(RoleDto roleDto);
 
     List<RoleDto> getRoles();
-
-    void deleteRole(Long id);
 }
