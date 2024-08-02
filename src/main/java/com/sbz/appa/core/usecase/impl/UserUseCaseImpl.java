@@ -2,6 +2,9 @@ package com.sbz.appa.core.usecase.impl;
 
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
+import com.sbz.appa.application.exception.ActionNotAllowedException;
+import com.sbz.appa.application.exception.AlreadyExistsException;
+import com.sbz.appa.application.exception.NotFoundException;
 import com.sbz.appa.commons.Role;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.usecase.ServiceUseCase;
@@ -37,7 +40,7 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public UserDto saveUser(UserDto userDto) {
         RoleEntity role = roleRepository.findByName(userDto.getRole())
-                .orElseThrow(() -> new IllegalStateException("Role not found"));
+                .orElseThrow(() -> new NotFoundException("role"));
         UserEntity userEntity = userMapper.mapFromDto(userDto);
         userEntity.setRole(role);
         UserEntity savedUser = userRepository.save(userEntity);
@@ -53,12 +56,14 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public UserDto updateUser(UserDto userDto, String email) {
         UserEntity savedUser =  userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
 
-        if (userDto.getPhone() != null && userRepository.findByPhone(userDto.getPhone()).filter(user -> !user.getEmail().equals(email)).isPresent())
-            throw new IllegalStateException("A user already exists with this phone");
+        if (userDto.getPhone() != null
+                && userRepository.findByPhone(userDto.getPhone())
+                .filter(user -> !user.getEmail().equals(email)).isPresent())
+            throw new AlreadyExistsException("user", "phone");
         else if (!userDto.getEmail().equals(email) && userRepository.findByEmail(userDto.getEmail()).isPresent())
-            throw new IllegalStateException("A user already exists with this email");
+            throw new AlreadyExistsException("user", "email");
 
         // Update User
         savedUser.setName(userDto.getName());
@@ -71,18 +76,18 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public void deleteUser(Long id, String email) {
         UserEntity userToDelete = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("User with this id not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
         UserEntity userRequester =  userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
         if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals(Role.ROLE_ADMIN.name())) {
             if (!userToDelete.getRole().getName().equals(Role.ROLE_BISON.name()))
-                throw new IllegalStateException("Incorrect user id");
+                throw new ActionNotAllowedException("user", "deleting");
             Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
                     .filter(service -> service.getArrived() == null)
                     .findFirst();
             serviceToDeliver.ifPresent(serviceUseCase::searchForBison);
         } else if (!userToDelete.equals(userRequester))
-            throw new IllegalStateException("Incorrect user id");
+            throw new ActionNotAllowedException("user", "deleting");
         // Delete user
         userRepository.deleteById(id);
     }
@@ -91,14 +96,14 @@ public class UserUseCaseImpl implements UserUseCase {
     public UserDto getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(userMapper::mapToDto)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
     }
 
     @Override
     public List<UserDto> getUserByRole(String role) {
         role = "ROLE_"+role.toUpperCase();
         RoleEntity roleEntity = roleRepository.findByName(role)
-                .orElseThrow(() -> new IllegalStateException("Role not found"));
+                .orElseThrow(() -> new NotFoundException("role"));
         return roleEntity.getUsers().stream()
                 .map(userMapper::mapToDto)
                 .toList();
@@ -107,7 +112,7 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public List<ServiceDto> getUserServices(String email, String serviceType) {
         UserEntity userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
 
         Stream<ServiceDto> userServices;
         if (userEntity.getRole().getName().equals(Role.ROLE_CITIZEN.name()))
@@ -126,19 +131,19 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public ServiceDto getLastService(String email) {
         UserEntity userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
         return userEntity.getCitizenOrders().stream()
                 .max(Comparator.comparing(ServiceEntity::getCreated))
                 .map(serviceMapper::mapToDto)
-                .orElseThrow(() -> new IllegalStateException("User does not have services"));
+                .orElseThrow(() -> new NotFoundException("service"));
     }
 
     @Override
     public ServiceDto getActiveService(String email) {
         UserEntity bison = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(() -> new NotFoundException("user"));
         return serviceUseCase.getActiveService(bison.getId())
-                .orElseThrow(() -> new IllegalStateException("Bison does not have any active service"));
+                .orElseThrow(() -> new NotFoundException("service"));
 
     }
 }

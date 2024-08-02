@@ -1,4 +1,4 @@
-package com.sbz.appa.application.utils;
+package com.sbz.appa.application.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
