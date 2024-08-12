@@ -84,8 +84,6 @@ class UserControllerTest {
         verify(staffValidator, times(1)).validate(userToCreate);
     }
 
-
-
     @Test
     void testThatGetUserSuccessfullyReturnsUserDto() {
         // Data for test
