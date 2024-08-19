@@ -13,6 +13,7 @@ import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 import com.sbz.appa.infrastructure.persistence.repository.RoleRepository;
 import com.sbz.appa.infrastructure.persistence.repository.UserRepository;
 import com.sbz.appa.util.RoleEntityTestData;
+import com.sbz.appa.util.ServiceDtoTestData;
 import com.sbz.appa.util.UserDtoTestData;
 import com.sbz.appa.util.UserEntityTestData;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +56,8 @@ class UserUseCaseImplTest {
     private ArgumentCaptor<String> stringArgumentCaptor;
     @Captor
     private ArgumentCaptor<Long> longArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<ServiceEntity> serviceEntityArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -333,8 +337,8 @@ class UserUseCaseImplTest {
     @Test
     void testThatDeleteUserIsSuccessful() {
         // Data for test
-        UserEntity userRequester = UserEntityTestData.createTestUserEntityCitizen();
-        UserEntity userToDelete = UserEntityTestData.createTestUserEntityCitizen();
+        UserEntity userRequester = UserEntityTestData.createTestUserEntityCitizen1();
+        UserEntity userToDelete = UserEntityTestData.createTestUserEntityCitizen1();
         long userToDeleteId = 1L;
         String emailOfRequester = userRequester.getEmail();
         when(userRepository.findById(longArgumentCaptor.capture()))
@@ -395,18 +399,229 @@ class UserUseCaseImplTest {
     }
 
     @Test
-    void getUserByRole() {
+    void testThatGetUserByRoleThrowsNotFoundExceptionByRole() {
+        // Data for test
+        String roleName = "CITIZEN";
+        when(roleRepository.findByName(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
+
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.getUserByRole(roleName)
+        );
+
+        // Assertions
+        assertEquals("role not found", exception.getMessage());
+        assertEquals("ROLE_"+roleName, stringArgumentCaptor.getValue());
+        verify(roleRepository, times(1)).findByName(anyString());
     }
 
     @Test
-    void getUserServices() {
+    void testThatGetUserByRoleSuccessfullyReturnsListOfUserDto() {
+        // Data for test
+        String roleName = "CITIZEN";
+        UserDto userDto = UserDtoTestData.createTestUserDtoCitizen();
+        UserDto userDto1 = UserDtoTestData.createTestUserDtoCitizen1();
+        RoleEntity roleRetrieved = RoleEntityTestData.createTestRoleEntityCitizen();
+        when(roleRepository.findByName(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(roleRetrieved));
+        when(userMapper.mapToDto(userEntityArgumentCaptor.capture()))
+                .thenReturn(userDto, userDto1);
+
+        // Invoke method
+        List<UserDto> result = underTest.getUserByRole(roleName);
+
+        // Assertions
+        assertEquals(List.of(userDto, userDto1), result);
+        assertEquals("ROLE_"+roleName, stringArgumentCaptor.getValue());
+        assertEquals(roleRetrieved.getUsers(), userEntityArgumentCaptor.getAllValues());
+        verify(roleRepository, times(1)).findByName(anyString());
     }
 
     @Test
-    void getLastService() {
+    void testThatGetUserServicesThrowsNotFoundExceptionByUser() {
+        // Data for test
+        String userEmail = "anyEmail";
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
+
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.getUserServices(userEmail, null)
+        );
+
+        // Assertions
+        assertEquals("user not found", exception.getMessage());
+        assertEquals(userEmail, stringArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
     }
 
     @Test
-    void getActiveService() {
+    void testThatGetUserSuccessfullyReturnsListOfServiceDtoForCitizen() {
+        // Data for test
+        UserEntity userCitizen = UserEntityTestData.createTestUserEntityCitizen();
+        String serviceType = "carriage";
+        ServiceDto serviceExpected = ServiceDtoTestData.createTestServiceDtoCarriage();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userCitizen));
+        when(serviceMapper.mapToDto(any(ServiceEntity.class)))
+                .thenReturn(serviceExpected)
+                .thenReturn(ServiceDtoTestData.createTestServiceDtoPackage());
+
+        // Invoke method
+        List<ServiceDto> result = underTest.getUserServices(userCitizen.getEmail(), serviceType);
+
+        // Assertions;
+        assertEquals(List.of(serviceExpected), result);
+        assertEquals(userCitizen.getEmail(), stringArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    void testThatGetUserSuccessfullyReturnsListOfServiceDtoForBison() {
+        // Data for test
+        UserEntity userBison = UserEntityTestData.createTestUserEntityBison();
+        String serviceType = "package";
+        ServiceDto serviceExpected = ServiceDtoTestData.createTestServiceDtoPackage();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userBison));
+        when(serviceMapper.mapToDto(any(ServiceEntity.class)))
+                .thenReturn(ServiceDtoTestData.createTestServiceDtoCarriage())
+                .thenReturn(serviceExpected);
+
+        // Invoke method
+        List<ServiceDto> result = underTest.getUserServices(userBison.getEmail(), serviceType);
+
+        // Assertions
+        assertEquals(List.of(serviceExpected), result);
+        assertEquals(userBison.getEmail(), stringArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    void testThatGetLastServiceThrowsNotFoundExceptionByUser() {
+        // Data for test
+        String userEmail = "anyEmail";
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
+
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.getLastService(userEmail)
+        );
+
+        // Assertions
+        assertEquals("user not found", exception.getMessage());
+        assertEquals(userEmail, stringArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    void testThatGetLastServiceSuccessfullyReturnsServiceDto() {
+        // Data for test
+        UserEntity userCitizen = UserEntityTestData.createTestUserEntityCitizen();
+        ServiceEntity serviceEntityExpected = userCitizen.getCitizenOrders().getFirst();
+        ServiceDto serviceDtoExpected = ServiceDtoTestData.createTestServiceDtoCarriage();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userCitizen));
+        when(serviceMapper.mapToDto(serviceEntityArgumentCaptor.capture()))
+                .thenReturn(serviceDtoExpected);
+
+        // Invoke method
+        ServiceDto result = underTest.getLastService(userCitizen.getEmail());
+
+        // Assertions
+        assertEquals(serviceDtoExpected, result);
+        assertEquals(userCitizen.getEmail(), stringArgumentCaptor.getValue());
+        assertEquals(serviceEntityExpected, serviceEntityArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    void testThatGetLastServiceThrowsNotFoundExceptionByService() {
+        // Data for test
+        UserEntity userCitizen = UserEntityTestData.createTestUserEntityCitizenWithOutServices();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userCitizen));
+
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.getLastService(userCitizen.getEmail())
+        );
+
+        // Assertions
+        assertEquals("service not found", exception.getMessage());
+        assertEquals(userCitizen.getEmail(), stringArgumentCaptor.getValue());
+        verifyNoInteractions(serviceMapper);
+    }
+
+    /**
+     * NotFoundException("user")
+     * successfully returns serviceDto
+     * NotFoundException("service")
+     */
+    @Test
+    void testThatGetActiveServiceThrowsNotFoundExceptionByUser() {
+        // Data for test
+        String userEmail = "anyEmail";
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
+
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.getActiveService(userEmail)
+        );
+
+        // Assertions
+        assertEquals("user not found", exception.getMessage());
+        assertEquals(userEmail, stringArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    void testThatGetActiveServiceSuccessfullyReturnsServiceDto() {
+        // Data for test
+        UserEntity userBison = UserEntityTestData.createTestUserEntityBison();
+        ServiceDto serviceExpected = ServiceDtoTestData.createTestServiceDtoPackage();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userBison));
+        when(serviceUseCase.getActiveService(longArgumentCaptor.capture()))
+                .thenReturn(Optional.of(serviceExpected));
+
+        // Invoke method
+        ServiceDto result = underTest.getActiveService(userBison.getEmail());
+
+        // Assertions
+        assertEquals(serviceExpected, result);
+        assertEquals(userBison.getEmail(), stringArgumentCaptor.getValue());
+        assertEquals(userBison.getId(), longArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    void testThatGetActiveServiceThrowsNotFoundExceptionByService() {
+        // Data for test
+        UserEntity userBison = UserEntityTestData.createTestUserEntityBison();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userBison));
+        when(serviceUseCase.getActiveService(longArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
+
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.getActiveService(userBison.getEmail())
+        );
+
+        // Assertions
+        assertEquals("service not found", exception.getMessage());
+        assertEquals(userBison.getEmail(), stringArgumentCaptor.getValue());
+        assertEquals(userBison.getId(), longArgumentCaptor.getValue());
+        verify(userRepository, times(1)).findByEmail(anyString());
     }
 }

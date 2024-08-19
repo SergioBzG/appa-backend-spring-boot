@@ -19,7 +19,7 @@ public class UserDtoTestData {
     public static UserDto createTestUserDtoCitizen1() {
         return UserDto.builder()
                 .role(Role.ROLE_CITIZEN.name())
-                .name("kyle")
+                .name("Kyle")
                 .email("kyle@appa.com")
                 .password("kyle123")
                 .phone("45476824")

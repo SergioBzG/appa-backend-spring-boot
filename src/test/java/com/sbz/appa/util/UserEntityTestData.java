@@ -5,6 +5,8 @@ import com.sbz.appa.commons.Role;
 import com.sbz.appa.infrastructure.persistence.entity.RoleEntity;
 import com.sbz.appa.infrastructure.persistence.entity.UserEntity;
 
+import java.util.List;
+
 public class UserEntityTestData {
 
     public static UserEntity createTestUserEntityCitizen() {
@@ -18,6 +20,39 @@ public class UserEntityTestData {
                 .password("kenny123")
                 .phone("1234567")
                 .available(true)
+                .citizenOrders(List.of(
+                        ServiceEntityTestData.createTestServiceEntityCarriage(),
+                        ServiceEntityTestData.createTestServiceEntityPackage()
+                ))
+                .build();
+    }
+
+    public static UserEntity createTestUserEntityCitizen1() {
+        return UserEntity.builder()
+                .name("Kyle")
+                .role(RoleEntity.builder()
+                        .name(Role.ROLE_CITIZEN.name())
+                        .build()
+                )
+                .email("kyle@appa.com")
+                .password("kyle123")
+                .phone("45476824")
+                .available(true)
+                .build();
+    }
+
+    public static UserEntity createTestUserEntityCitizenWithOutServices() {
+        return UserEntity.builder()
+                .name("Kyle")
+                .role(RoleEntity.builder()
+                        .name(Role.ROLE_CITIZEN.name())
+                        .build()
+                )
+                .email("kyle@appa.com")
+                .password("kyle123")
+                .phone("45476824")
+                .available(true)
+                .citizenOrders(List.of())
                 .build();
     }
 
@@ -62,6 +97,10 @@ public class UserEntityTestData {
                 .phone("785343")
                 .vehicle("ERT-842")
                 .available(true)
+                .bisonOrders(List.of(
+                        ServiceEntityTestData.createTestServiceEntityCarriage(),
+                        ServiceEntityTestData.createTestServiceEntityPackage()
+                ))
                 .build();
     }
 
