@@ -9,7 +9,6 @@ import com.sbz.appa.core.usecase.ServiceUseCase;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Digits;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,7 +21,6 @@ import java.util.UUID;
 @RequestMapping(path = "/v1/services")
 @AllArgsConstructor
 @Validated
-@Slf4j
 public class ServiceController {
 
     private final ServiceUseCase serviceUseCase;

@@ -3,9 +3,11 @@ package com.sbz.appa.application.dto;
 import com.sbz.appa.application.validator.annotation.ValidCheckpoint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class PathDto {
     @NotBlank(message = "an origin checkpoint is required")
     @Size(max = 50, message = "origin checkpoint is too long")
