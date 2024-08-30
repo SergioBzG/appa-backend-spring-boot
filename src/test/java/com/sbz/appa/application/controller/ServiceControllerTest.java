@@ -69,7 +69,7 @@ class ServiceControllerTest {
         // Assertions
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(serviceDtoToCreate, response.getBody());
-        assertEquals(serviceDtoToCreate, serviceDtoArgumentCaptor.getAllValues().getFirst());
+        assertEquals(serviceDtoToCreate, serviceDtoArgumentCaptor.getValue());
         assertEquals(userEmail, stringArgumentCaptor.getValue());
         verify(serviceDtoValidator, times(1)).validate(any(ServiceDto.class));
     }

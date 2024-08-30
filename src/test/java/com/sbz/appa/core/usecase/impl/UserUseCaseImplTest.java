@@ -473,7 +473,7 @@ class UserUseCaseImplTest {
         // Invoke method
         List<ServiceDto> result = underTest.getUserServices(userCitizen.getEmail(), serviceType);
 
-        // Assertions;
+        // Assertions
         assertEquals(List.of(serviceExpected), result);
         assertEquals(userCitizen.getEmail(), stringArgumentCaptor.getValue());
         verify(userRepository, times(1)).findByEmail(anyString());

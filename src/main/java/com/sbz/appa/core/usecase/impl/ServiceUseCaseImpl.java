@@ -78,7 +78,7 @@ public class ServiceUseCaseImpl implements ServiceUseCase {
             throw new NotFoundException("service");
         else if (serviceEntity.getArrived() != null)
             throw new ActionNotAllowedException("service", "updating");
-        else  if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
+        else if (newLocationEntity.getCurrentCheckpoint().equals(serviceEntity.getDestinationCheckpoint())) {
             // Package or Carriage has arrived to its destination
             if (serviceEntity.getType() == ServiceType.CARRIAGE && price == null)
                 throw new InvalidOrMissingDataException("carriage", "price");
