@@ -1,10 +1,11 @@
 package com.sbz.appa.core.usecase.impl;
 
-import com.sbz.appa.application.dto.GuideDto;
-import com.sbz.appa.application.dto.ServiceDto;
+import com.sbz.appa.application.dto.*;
 import com.sbz.appa.application.exception.ActionNotAllowedException;
 import com.sbz.appa.application.exception.InvalidOrMissingDataException;
 import com.sbz.appa.application.exception.NotFoundException;
+import com.sbz.appa.commons.Checkpoint;
+import com.sbz.appa.core.domain.model.ServiceOrder;
 import com.sbz.appa.core.mapper.Mapper;
 import com.sbz.appa.core.mapper.ServiceOrderDtoToServiceOrder;
 import com.sbz.appa.infrastructure.persistence.entity.GuideEntity;
@@ -16,12 +17,14 @@ import com.sbz.appa.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,6 +54,10 @@ class ServiceUseCaseImplTest {
     ArgumentCaptor<String> stringArgumentCaptor;
     @Captor
     ArgumentCaptor<Long> longArgumentCaptor;
+    @Captor
+    ArgumentCaptor<Checkpoint> checkpointArgumentCaptor;
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -350,41 +357,130 @@ class ServiceUseCaseImplTest {
         assertEquals(id, longArgumentCaptor.getValue());
     }
 
-
-    @Test
-    void getServicePrice() {
+    // TODO: to search how to mock abstract classes
+    /**
+     * The following two tests does not work.
+     * It seems that the ServiceOrder mock is wrong.
+     */
+//    @Test
+    void testThatGetServicePriceReturnsPrice() {
         // Data for test
+        ServiceOrder serviceOrderMock = mock(ServiceOrder.class, Answers.RETURNS_MOCKS);
+        ServiceOrderDto serviceOrderDto = ServiceOrderDtoTestData.createTestServiceOrderDto();
+        ServiceOrder serviceOrderCreated = ServiceOrderTestData.createTestServiceOrderCarriage();
+        double price = 234.45d;
+        when(serviceOrderDtoToServiceOrder.mapFromDto(any(ServiceOrderDto.class)))
+                .thenReturn(serviceOrderCreated);
+        when(serviceOrderMock.getPrice())
+                .thenReturn(price);
 
         // Invoke method
+        Double result = underTest.getServicePrice(serviceOrderDto);
 
         // Assertions
+        assertEquals(price, result);
+        verify(serviceOrderDtoToServiceOrder, times(1)).mapFromDto(serviceOrderDto);
+    }
+
+//    @Test
+    void testThatGetOptimalRouteReturnsRouteDto() {
+        // Data for test
+        ServiceOrder serviceOrderMock = mock(ServiceOrder.class, Answers.CALLS_REAL_METHODS);
+        PathDto pathDto = PathDtoTestData.createTestPathDto();
+        RouteDto routeDto = RouteDtoTestData.createTestRouteDto();
+        when(serviceOrderMock.getPathList(checkpointArgumentCaptor.capture(), checkpointArgumentCaptor.capture()))
+                .thenReturn(routeDto.getOptimalRoute());
+
+        // Invoke method
+        RouteDto result = underTest.getOptimalRoute(pathDto);
+
+        // Assertions
+        assertEquals(routeDto, result);
+        assertEquals(Checkpoint.valueOf(pathDto.getOriginCheckpoint()),
+                checkpointArgumentCaptor.getAllValues().getFirst());
+        assertEquals(Checkpoint.valueOf(pathDto.getDestinationCheckpoint()),
+                checkpointArgumentCaptor.getAllValues().get(1));
     }
 
     @Test
-    void getOptimalRoute() {
+    void testThatTrackServiceThrowsNotFoundExceptionByUuid() {
         // Data for test
+        UUID guideId = UUID.randomUUID();
+        String userEmail = "anyEmail";
+        when(serviceRepository.findByGuideId(uuidArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
 
-        // Invoke method
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.trackService(guideId, userEmail)
+        );
 
         // Assertions
+        assertEquals("service not found", exception.getMessage());
+        assertEquals(guideId, uuidArgumentCaptor.getValue());
+        verifyNoInteractions(guideMapper);
     }
 
     @Test
-    void trackService() {
+    void testThatTrackServiceThrowsNotFoundExceptionByCitizen() {
         // Data for test
+        GuideDto guideDto = GuideDtoTestData.createTestGuideDto();
+        ServiceEntity serviceEntity = ServiceEntityTestData.createTestServiceEntityCarriageWithCitizen();
+        String userEmail = "anyEmail";
+        when(serviceRepository.findByGuideId(uuidArgumentCaptor.capture()))
+                .thenReturn(Optional.of(serviceEntity));
 
-        // Invoke method
+        // Invoke method (and assertion at the same time)
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> underTest.trackService(guideDto.getId(), userEmail)
+        );
 
         // Assertions
+        assertEquals("service not found", exception.getMessage());
+        assertEquals(guideDto.getId(), uuidArgumentCaptor.getValue());
+        verifyNoInteractions(guideMapper);
     }
 
     @Test
-    void getActiveService() {
+    void testThatTrackServiceReturnsGuideDto() {
         // Data for test
+        GuideDto guideDto = GuideDtoTestData.createTestGuideDto();
+        ServiceEntity serviceEntity = ServiceEntityTestData.createTestServiceEntityCarriageWithCitizen();
+        String userEmail = serviceEntity.getUserCitizen().getEmail();
+        when(serviceRepository.findByGuideId(uuidArgumentCaptor.capture()))
+                .thenReturn(Optional.of(serviceEntity));
+        when(guideMapper.mapToDto(serviceEntity.getGuide()))
+                .thenReturn(guideDto);
 
         // Invoke method
+        GuideDto result = underTest.trackService(guideDto.getId(), userEmail);
 
         // Assertions
+        assertEquals(guideDto, result);
+        assertEquals(guideDto.getId(), uuidArgumentCaptor.getValue());
+        verify(guideMapper, times(1)).mapToDto(serviceEntity.getGuide());
+    }
+
+    @Test
+    void testThatGetActiveServiceReturnsServiceDto() {
+        // Data for test
+        Long bisonId = 1L;
+        ServiceEntity serviceEntity = ServiceEntityTestData.createTestServiceEntityPackage();
+        ServiceDto serviceDto = ServiceDtoTestData.createTestServiceDtoPackage();
+        when(serviceRepository.findFirstByArrivedIsNullAndUserBisonId(longArgumentCaptor.capture()))
+                .thenReturn(Optional.of(serviceEntity));
+        when(serviceMapper.mapToDto(serviceEntity))
+                .thenReturn(serviceDto);
+
+        // Invoke method
+        Optional<ServiceDto> result = underTest.getActiveService(bisonId);
+
+        // Assertions
+        assertTrue(result.isPresent());
+        assertEquals(serviceDto, result.get());
+        assertEquals(bisonId, longArgumentCaptor.getValue());
     }
 
     @Test

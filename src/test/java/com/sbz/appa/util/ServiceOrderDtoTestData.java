@@ -8,11 +8,7 @@ public class ServiceOrderDtoTestData {
         return ServiceOrderDto.builder()
                 .type("CARRIAGE")
                 .originCheckpoint("NORTHERN_WATER")
-                .destinationCheckpoint("SOUTHERN_WATER")
-                .length(450)
-                .width(700)
-                .height(900)
-                .weight(1000)
+                .destinationCheckpoint("SOUTHERN_AIR")
                 .build();
     }
 }
