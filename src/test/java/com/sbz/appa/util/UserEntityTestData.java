@@ -41,7 +41,7 @@ public class UserEntityTestData {
                 .build();
     }
 
-    public static UserEntity createTestUserEntityCitizenWithOutServices() {
+    public static UserEntity createTestUserEntityCitizenWithoutServices() {
         return UserEntity.builder()
                 .name("Kyle")
                 .role(RoleEntity.builder()

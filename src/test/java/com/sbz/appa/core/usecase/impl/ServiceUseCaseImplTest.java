@@ -17,10 +17,7 @@ import com.sbz.appa.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -357,20 +354,14 @@ class ServiceUseCaseImplTest {
         assertEquals(id, longArgumentCaptor.getValue());
     }
 
-    // TODO: to search how to mock abstract classes
-    /**
-     * The following two tests does not work.
-     * It seems that the ServiceOrder mock is wrong.
-     */
-//    @Test
+    @Test
     void testThatGetServicePriceReturnsPrice() {
         // Data for test
-        ServiceOrder serviceOrderMock = mock(ServiceOrder.class, Answers.RETURNS_MOCKS);
+        ServiceOrder serviceOrderMock = mock(ServiceOrder.class);
         ServiceOrderDto serviceOrderDto = ServiceOrderDtoTestData.createTestServiceOrderDto();
-        ServiceOrder serviceOrderCreated = ServiceOrderTestData.createTestServiceOrderCarriage();
         double price = 234.45d;
         when(serviceOrderDtoToServiceOrder.mapFromDto(any(ServiceOrderDto.class)))
-                .thenReturn(serviceOrderCreated);
+                .thenReturn(serviceOrderMock);
         when(serviceOrderMock.getPrice())
                 .thenReturn(price);
 
@@ -382,24 +373,30 @@ class ServiceUseCaseImplTest {
         verify(serviceOrderDtoToServiceOrder, times(1)).mapFromDto(serviceOrderDto);
     }
 
-//    @Test
+    @Test
     void testThatGetOptimalRouteReturnsRouteDto() {
         // Data for test
-        ServiceOrder serviceOrderMock = mock(ServiceOrder.class, Answers.CALLS_REAL_METHODS);
         PathDto pathDto = PathDtoTestData.createTestPathDto();
         RouteDto routeDto = RouteDtoTestData.createTestRouteDto();
-        when(serviceOrderMock.getPathList(checkpointArgumentCaptor.capture(), checkpointArgumentCaptor.capture()))
-                .thenReturn(routeDto.getOptimalRoute());
+        try(MockedStatic<ServiceOrder> serviceOrder  = Mockito.mockStatic(ServiceOrder.class)) {
+            serviceOrder.when(() -> ServiceOrder.getPathList(
+                    checkpointArgumentCaptor.capture(),
+                    checkpointArgumentCaptor.capture()
+            ))
+            .thenReturn(routeDto.getOptimalRoute());
 
-        // Invoke method
-        RouteDto result = underTest.getOptimalRoute(pathDto);
+            // Invoke method
+            RouteDto result = underTest.getOptimalRoute(pathDto);
 
-        // Assertions
-        assertEquals(routeDto, result);
-        assertEquals(Checkpoint.valueOf(pathDto.getOriginCheckpoint()),
-                checkpointArgumentCaptor.getAllValues().getFirst());
-        assertEquals(Checkpoint.valueOf(pathDto.getDestinationCheckpoint()),
-                checkpointArgumentCaptor.getAllValues().get(1));
+            // Assertions
+            assertEquals(routeDto.getOptimalRoute(), result.getOptimalRoute());
+            assertEquals(Checkpoint.valueOf(pathDto.getOriginCheckpoint()),
+                    checkpointArgumentCaptor.getAllValues().getFirst());
+            assertEquals(Checkpoint.valueOf(pathDto.getDestinationCheckpoint()),
+                    checkpointArgumentCaptor.getAllValues().get(1));
+        }
+
+
     }
 
     @Test
@@ -484,21 +481,75 @@ class ServiceUseCaseImplTest {
     }
 
     @Test
-    void searchForOrder() {
+    void testThatSearchForOrderUpdatesServiceAndBisonWhenOrderIsFound() {
         // Data for test
+        UserEntity userEntity = UserEntityTestData.createTestUserEntityBison();
+        ServiceEntity service = ServiceEntityTestData.createTestServiceEntityCarriage();
+        when(serviceRepository.findFirstByArrivedIsNullAndUserBisonIsNullOrderByCreatedAsc())
+                .thenReturn(Optional.of(service));
 
         // Invoke method
+        underTest.searchForOrder(userEntity);
 
         // Assertions
+        assertFalse(userEntity.getAvailable());
+        assertNotNull(service.getUserBison());
+        assertEquals(service.getUserBison(), userEntity);
     }
 
     @Test
-    void searchForBison() {
+    void testThatSearchForOrderDoesNothingWhenOrderIsNotFound() {
         // Data for test
+        UserEntity userEntity = UserEntityTestData.createTestUserEntityBison();
+        ServiceEntity service = ServiceEntityTestData.createTestServiceEntityCarriage();
+        when(serviceRepository.findFirstByArrivedIsNullAndUserBisonIsNullOrderByCreatedAsc())
+                .thenReturn(Optional.empty());
 
         // Invoke method
+        underTest.searchForOrder(userEntity);
 
         // Assertions
+        assertTrue(userEntity.getAvailable());
+        assertNull(service.getUserBison());
+    }
+
+    @Test
+    void testThatSearchForBisonUpdatesBisonAndServiceWhenBisonWithoutOrdersIsFound() {
+        // Data for test
+        UserEntity userEntity = UserEntityTestData.createTestUserEntityBison();
+        ServiceEntity service = ServiceEntityTestData.createTestServiceEntityCarriage();
+        when(userRepository.findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNull(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userEntity));
+
+        // Invoke method
+        underTest.searchForBison(service);
+
+        // Assertions
+        assertFalse(userEntity.getAvailable());
+        assertNotNull(service.getUserBison());
+        assertEquals(service.getUserBison(), userEntity);
+        assertEquals("ROLE_BISON", stringArgumentCaptor.getValue());
+    }
+
+    @Test
+    void testThatSearchForBisonUpdatesBisonAndServiceWhenBisonWithMoreTimeAvailableIsFound() {
+        // Data for test
+        UserEntity userEntity = UserEntityTestData.createTestUserEntityBison();
+        ServiceEntity service = ServiceEntityTestData.createTestServiceEntityCarriage();
+        when(userRepository.findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNull(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.empty());
+        when(userRepository.findFirstByAvailableIsTrueAndRoleNameAndLastDeliveryIsNotNullOrderByLastDeliveryAsc(
+                stringArgumentCaptor.capture())
+        ).thenReturn(Optional.of(userEntity));
+
+        // Invoke method
+        underTest.searchForBison(service);
+
+        // Assertions
+        assertFalse(userEntity.getAvailable());
+        assertNotNull(service.getUserBison());
+        assertEquals(service.getUserBison(), userEntity);
+        assertEquals("ROLE_BISON", stringArgumentCaptor.getValue());
     }
 }
 

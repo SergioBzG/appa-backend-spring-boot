@@ -543,7 +543,7 @@ class UserUseCaseImplTest {
     @Test
     void testThatGetLastServiceThrowsNotFoundExceptionByService() {
         // Data for test
-        UserEntity userCitizen = UserEntityTestData.createTestUserEntityCitizenWithOutServices();
+        UserEntity userCitizen = UserEntityTestData.createTestUserEntityCitizenWithoutServices();
         when(userRepository.findByEmail(stringArgumentCaptor.capture()))
                 .thenReturn(Optional.of(userCitizen));
 
