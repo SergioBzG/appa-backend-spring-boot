@@ -1,0 +1,17 @@
+server:
+    error:
+        include-message: always
+    port: ${SERVER_PORT:8080}
+spring:
+    application:
+        name: appa
+    datasource:
+        url: jdbc:h2:mem:testdb
+        username: sa
+        password:
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.H2Dialect
