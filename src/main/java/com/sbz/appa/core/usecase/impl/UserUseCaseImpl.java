@@ -82,6 +82,7 @@ public class UserUseCaseImpl implements UserUseCase {
         if (!userToDelete.equals(userRequester) && userRequester.getRole().getName().equals(Role.ROLE_ADMIN.name())) {
             if (!userToDelete.getRole().getName().equals(Role.ROLE_BISON.name()))
                 throw new ActionNotAllowedException("user", "deleting");
+            // TODO : extract this snippet of code in a method (search for new bison)
             Optional<ServiceEntity> serviceToDeliver = userToDelete.getBisonOrders().stream()
                     .filter(service -> service.getArrived() == null)
                     .findFirst();

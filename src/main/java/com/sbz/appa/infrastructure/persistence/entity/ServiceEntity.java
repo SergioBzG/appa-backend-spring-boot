@@ -28,11 +28,11 @@ public class ServiceEntity {
 
     @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_citizen", referencedColumnName = "id")
-    private UserEntity  userCitizen;
+    private UserEntity userCitizen;
 
     @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_bison", referencedColumnName = "id")
-    private UserEntity  userBison;
+    private UserEntity userBison;
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
@@ -69,11 +69,11 @@ public class ServiceEntity {
     private Checkpoint destinationCheckpoint;
 
     @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn // which indicates that the primary key of the Service entity is used as the foreign key value for the associated Carriage entity
+    @PrimaryKeyJoinColumn // it indicates that the primary key of the Service entity is used as the foreign key value for the associated Carriage entity (?)
     private CarriageEntity carriageEntity;
 
     @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn // which indicates that the primary key of the Service entity is used as the foreign key value for the associated Package entity
+    @PrimaryKeyJoinColumn // it indicates that the primary key of the Service entity is used as the foreign key value for the associated Package entity (?)
     private PackageEntity packageEntity;
 
     @OneToOne(mappedBy = "service", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)

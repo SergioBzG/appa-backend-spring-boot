@@ -5,5 +5,4 @@ public enum Nation {
     FIRE,
     EARTH,
     WATER
-
 }
