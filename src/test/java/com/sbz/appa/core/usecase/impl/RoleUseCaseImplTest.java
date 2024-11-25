@@ -72,7 +72,7 @@ class RoleUseCaseImplTest {
         when(roleMapper.mapToDto(any(RoleEntity.class)))
                 .thenReturn(roleDto);
 
-        // Invoke method (and assertion at the same time)
+        // Invoke method
         RoleDto result = underTest.saveRole(roleDto);
 
         // Assertions

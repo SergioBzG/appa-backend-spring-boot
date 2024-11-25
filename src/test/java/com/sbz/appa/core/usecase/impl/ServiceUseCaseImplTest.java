@@ -44,17 +44,17 @@ class ServiceUseCaseImplTest {
     private ServiceUseCaseImpl underTest;
 
     @Captor
-    ArgumentCaptor<ServiceDto> serviceDtoArgumentCaptor;
+    private ArgumentCaptor<ServiceDto> serviceDtoArgumentCaptor;
     @Captor
-    ArgumentCaptor<ServiceEntity> serviceEntityArgumentCaptor;
+    private ArgumentCaptor<ServiceEntity> serviceEntityArgumentCaptor;
     @Captor
-    ArgumentCaptor<String> stringArgumentCaptor;
+    private ArgumentCaptor<String> stringArgumentCaptor;
     @Captor
-    ArgumentCaptor<Long> longArgumentCaptor;
+    private ArgumentCaptor<Long> longArgumentCaptor;
     @Captor
-    ArgumentCaptor<Checkpoint> checkpointArgumentCaptor;
+    private ArgumentCaptor<Checkpoint> checkpointArgumentCaptor;
     @Captor
-    ArgumentCaptor<UUID> uuidArgumentCaptor;
+    private ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -270,7 +270,7 @@ class ServiceUseCaseImplTest {
     void testThatGetServiceThrowsNotFoundExceptionByUser() {
         // Data for test
         long id = 1L;
-        String userEmail = "anyUser";
+        String userEmail = "anyEmail";
         when(userRepository.findByEmail(stringArgumentCaptor.capture()))
                 .thenReturn(Optional.empty());
 
@@ -355,6 +355,29 @@ class ServiceUseCaseImplTest {
     }
 
     @Test
+    void testThatGetServiceReturnsServiceDto() {
+        // Data for test
+        ServiceEntity serviceEntity = ServiceEntityTestData.createTestServiceEntityCarriageWithCitizen();
+        ServiceDto serviceDto = ServiceDtoTestData.createTestServiceDtoCarriage();
+        UserEntity userEntity = serviceEntity.getUserCitizen();
+        when(userRepository.findByEmail(stringArgumentCaptor.capture()))
+                .thenReturn(Optional.of(userEntity));
+        when(serviceRepository.findById(longArgumentCaptor.capture()))
+                .thenReturn(Optional.of(serviceEntity));
+        when(serviceMapper.mapToDto(any(ServiceEntity.class)))
+                .thenReturn(serviceDto);
+
+        // Invoke method
+        ServiceDto result = underTest.getService(serviceEntity.getId(), userEntity.getEmail());
+
+        // Assertions
+        assertEquals(serviceDto, result);
+        assertEquals(serviceEntity.getId(), longArgumentCaptor.getValue());
+        assertEquals(userEntity.getEmail(), stringArgumentCaptor.getValue());
+        verify(serviceMapper, times(1)).mapToDto(serviceEntity);
+    }
+
+    @Test
     void testThatGetServicePriceReturnsPrice() {
         // Data for test
         ServiceOrder serviceOrderMock = mock(ServiceOrder.class);
@@ -378,7 +401,7 @@ class ServiceUseCaseImplTest {
         // Data for test
         PathDto pathDto = PathDtoTestData.createTestPathDto();
         RouteDto routeDto = RouteDtoTestData.createTestRouteDto();
-        try(MockedStatic<ServiceOrder> serviceOrder  = Mockito.mockStatic(ServiceOrder.class)) {
+        try(MockedStatic<ServiceOrder> serviceOrder = mockStatic(ServiceOrder.class)) {
             serviceOrder.when(() -> ServiceOrder.getPathList(
                     checkpointArgumentCaptor.capture(),
                     checkpointArgumentCaptor.capture()
@@ -395,8 +418,6 @@ class ServiceUseCaseImplTest {
             assertEquals(Checkpoint.valueOf(pathDto.getDestinationCheckpoint()),
                     checkpointArgumentCaptor.getAllValues().get(1));
         }
-
-
     }
 
     @Test

@@ -127,7 +127,7 @@ class ServiceControllerTest {
         ServiceOrderDto serviceOrderDto = ServiceOrderDtoTestData.createTestServiceOrderDto();
         double price = 100.0;
         when(serviceUseCase.getServicePrice(serviceOrderDto))
-                .thenReturn(100.0);
+                .thenReturn(price);
 
         // Invoke method
         ResponseEntity<ServicePrice> response = underTest.getPrice(serviceOrderDto);
