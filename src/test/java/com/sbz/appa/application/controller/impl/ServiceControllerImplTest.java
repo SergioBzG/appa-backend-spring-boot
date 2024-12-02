@@ -1,4 +1,4 @@
-package com.sbz.appa.application.controller;
+package com.sbz.appa.application.controller.impl;
 
 import com.sbz.appa.application.dto.*;
 import com.sbz.appa.application.util.ServicePrice;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class ServiceControllerTest {
+class ServiceControllerImplTest {
 
     @Mock
     private ServiceUseCase serviceUseCase;
@@ -36,7 +36,7 @@ class ServiceControllerTest {
     @Mock
     private Validator<ServiceDto> serviceDtoValidator;
 
-    private ServiceController underTest;
+    private ServiceControllerImpl underTest;
 
     @Captor
     private ArgumentCaptor<ServiceDto> serviceDtoArgumentCaptor;
@@ -49,7 +49,7 @@ class ServiceControllerTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new ServiceController(serviceUseCase, serviceOrderDtoValidator, serviceDtoValidator);
+        underTest = new ServiceControllerImpl(serviceUseCase, serviceOrderDtoValidator, serviceDtoValidator);
     }
 
     @Test

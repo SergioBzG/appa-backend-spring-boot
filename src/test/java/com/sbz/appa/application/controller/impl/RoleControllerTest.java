@@ -1,4 +1,4 @@
-package com.sbz.appa.application.controller;
+package com.sbz.appa.application.controller.impl;
 
 import com.sbz.appa.application.dto.RoleDto;
 import com.sbz.appa.core.usecase.RoleUseCase;
@@ -24,7 +24,7 @@ class RoleControllerTest {
     @Mock
     private RoleUseCase roleUseCase;
     @InjectMocks
-    private RoleController underTest;
+    private RoleControllerImpl underTest;
 
     @Captor
     private ArgumentCaptor<RoleDto> roleDtoArgumentCaptor;

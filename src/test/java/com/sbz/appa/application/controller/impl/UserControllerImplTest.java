@@ -1,4 +1,4 @@
-package com.sbz.appa.application.controller;
+package com.sbz.appa.application.controller.impl;
 
 import com.sbz.appa.application.dto.ServiceDto;
 import com.sbz.appa.application.dto.UserDto;
@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+class UserControllerImplTest {
 
     @Mock
     private UserUseCase userUseCase;
@@ -34,7 +34,7 @@ class UserControllerTest {
     @Mock
     private Validator<UserDto> staffValidator;
     @InjectMocks
-    private UserController underTest;
+    private UserControllerImpl underTest;
 
     @Captor
     private ArgumentCaptor<UserDto> userDtoArgumentCaptor;

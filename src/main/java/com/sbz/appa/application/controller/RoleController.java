@@ -2,34 +2,23 @@ package com.sbz.appa.application.controller;
 
 
 import com.sbz.appa.application.dto.RoleDto;
-import com.sbz.appa.core.usecase.RoleUseCase;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/v1/roles")
-@AllArgsConstructor
-public class RoleController {
-
-    private final RoleUseCase roleUseCase;
+public interface RoleController {
 
     @PostMapping(value = "/create")
-    public ResponseEntity<RoleDto> createRole(@RequestBody @Valid RoleDto role) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(roleUseCase.saveRole(role));
-    }
+    ResponseEntity<RoleDto> createRole(@RequestBody @Valid RoleDto role);
 
     @GetMapping(value = "/list")
-    public ResponseEntity<List<RoleDto>> listRoles() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(roleUseCase.getRoles());
-    }
-
+    ResponseEntity<List<RoleDto>> listRoles();
 }
