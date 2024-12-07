@@ -2,6 +2,8 @@ server:
     error:
         include-message: always
     port: ${SERVER_PORT}
+    servlet:
+        context-path: /appa_svc
 spring:
     application:
         name: appa
