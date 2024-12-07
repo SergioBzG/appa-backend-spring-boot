@@ -15,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController
 @RequestMapping(path = "/v1/services")
 @Validated
 public interface ServiceController {
